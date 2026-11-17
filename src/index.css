@@ -1,0 +1,78 @@
+:root {
+  --font-title: "Ready Active";
+  --font-main: "Barlaxent";
+  --font-description: "Uncut Sans";
+  --font-sub: "Averia Serif Libre";
+  --color-background: #F5F5F5;
+}
+
+html, body, #root {
+  padding: 0;
+  margin: 0;
+}
+
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-background);
+}
+
+
+/* FONTS */
+@font-face {
+  font-family: 'Uncut Sans';
+  src: url('/fonts/UncutSans-Light.otf') format('opentype');
+  font-style: "light";
+  font-weight: 200;
+}
+
+@font-face {
+  font-family: 'Uncut Sans';
+  src: url('/fonts/UncutSans-Book.otf') format('opentype');
+  font-style: "book";
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: 'Uncut Sans';
+  src: url('/fonts/UncutSans-Regular.otf') format('opentype');
+  font-style: "normal";
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Averia Serif Libre';
+  src: url('/fonts/AveriaSerifLibre-Light.ttf') format('ttf');
+  font-style: "light";
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: 'Averia Serif Libre';
+  src: url('/fonts/AveriaSerifLibre-Regular.ttf') format('ttf');
+  font-style: "normal";
+  font-weight:400;
+}
+
+@font-face {
+  font-family: 'Barlaxent';
+  src: url('/fonts/barlaxent.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Ready Active';
+  src: url('/fonts/ReadyActiveTest-Light.otf') format('opentype');
+  font-style: "light";
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: 'Ready Active';
+  src: url('/fonts/ReadyActiveTest-Regular.otf') format('opentype');
+  font-style: "normal";
+  font-weight: 400;
+}
