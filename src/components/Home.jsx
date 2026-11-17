@@ -165,7 +165,7 @@ export default function Home() {
         animate={{ opacity: showContent ? 1 : 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
-        <p>(projects)</p>
+        <p>(<span>projects</span>)</p>
       </motion.div>
 
       {/* INTRODUCTION */}
@@ -185,7 +185,7 @@ export default function Home() {
         animate={{ opacity: showContent ? 1 : 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
-        <p>website under construction</p>
+        <p>iteration 1.<span>?</span></p>
       </motion.div>
 
     </main>
