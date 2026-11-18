@@ -136,8 +136,8 @@ export default function Home() {
           bottom: isMobile ? "auto" : "20px",
           left: isMobile ? "14px" : "50%",
           x: isMobile ? 0 : "-50%",
-          flexDirection: isMobile && projectsOpen ? "column" : "row",
-          gap: isMobile && projectsOpen ? "12px" : "22px",
+          // flexDirection: isMobile && projectsOpen ? "column" : "row",
+          // gap: isMobile && projectsOpen ? "12px" : "22px",
         }}
         transition={{
           duration: 0.8,
@@ -159,7 +159,7 @@ export default function Home() {
         className="gradient-squares gradient-squares-bottom"
         initial={{ opacity: 0 }}
         animate={{
-          opacity: showContent && projectsOpen && isMobile ? 1 : 0,
+          opacity: showContent && isMobile ? 1 : 0,
         }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
