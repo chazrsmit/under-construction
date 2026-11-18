@@ -314,6 +314,8 @@ body {
   .mobile-image-block {
     position: absolute;
     display: flex;
+        gap:3px;
+
   }
 
   .mobile-image-block .image-tile {
