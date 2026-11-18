@@ -254,7 +254,13 @@ export default function Home() {
           setHoveredProject(null);
         }}
       >
-        <p>(<span>projects</span>)</p>
+        <motion.p
+          className="projects-p"
+          animate={{ opacity: projectsOpen ? 0.2 : 1 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
+          (<span>projects</span>)
+        </motion.p>
       </motion.div>
 
       {/* PROJECT LIST */}
