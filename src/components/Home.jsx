@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./home.css";
@@ -12,11 +11,12 @@ const projects = [
   { name: "napolinapoli", description: "(digital project)" },
 ];
 
+// Closed state: the 14 blocks form the diagonal S-curve
 const mobileImagePositions = [
   { x: 87, y: 20 },
   { x: 71, y: 23 },
   { x: 55, y: 26 },
-  { x: 39, y: 29 },
+  { x: 39, y: 29 }, 
   { x: 23, y: 33 },
   { x: 8, y: 37 },
   { x: -3, y: 43 },
@@ -26,8 +26,29 @@ const mobileImagePositions = [
   { x: 39, y: 63 },
   { x: 56, y: 66 },
   { x: 73, y: 69 },
-  { x: 89, y: 70 },
+  { x: 89, y: 72 },
 ];
+
+// Projects open: all 14 blocks scattered (393 x 852 frame).
+// Indices 0-8 match the screenshot, 9-13 fill the empty zones.
+const mobileImagePositionsOpen = [
+  { x: 29, y: 0 },
+  { x: 58.5, y: 4.5 },
+  { x: 87.5, y: 9.6 },
+  { x: 97, y: 31.2 },
+  { x: 66.7, y: 34.5 },
+  { x: 49, y: 44.4 },
+  { x: 73, y: 53.1 },
+  { x: 75.6, y: 90.4 },
+  { x: 87, y: 98 },
+  { x: 56, y: 16 },
+  { x: 33, y: 23 },
+  { x: 70, y: 64 },
+  { x: 30, y: 72 },
+  { x: 60, y: 79 },
+];
+
+const moveEase = [0.22, 1, 0.36, 1];
 
 export default function Home() {
   const [showContent, setShowContent] = useState(false);
@@ -173,32 +194,47 @@ export default function Home() {
         ))}
       </motion.div>
 
-      {/* MOBILE IMAGE COMPOSITION - ORIGINAL 14 BLOCKS */}
+      {/* MOBILE IMAGE COMPOSITION - 14 BLOCKS, REPOSITIONED WHEN PROJECTS OPEN */}
       <div className="mobile-image-composition">
-        {mobileImagePositions.map((position, index) => (
-          <motion.div
-            className="mobile-image-block"
-            key={index}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: showContent ? 1 : 0 }}
-            transition={{
-              duration: 0.5,
-              delay: showContent ? index * 0.12 : 0,
-              ease: "easeOut",
-            }}
-            style={{
-              left: `${position.x}%`,
-              top: `${position.y}%`,
-            }}
-          >
-            {[1, 2, 3].map((tile) => (
-              <div
-                className={`image-tile tile-${tile}`}
-                key={tile}
-              />
-            ))}
-          </motion.div>
-        ))}
+        {mobileImagePositions.map((closedPosition, index) => {
+          const position = projectsOpen
+            ? mobileImagePositionsOpen[index]
+            : closedPosition;
+          const isVisible = showContent;
+
+          return (
+            <motion.div
+              className="mobile-image-block"
+              key={index}
+              initial={{
+                opacity: 0,
+                left: `${closedPosition.x}%`,
+                top: `${closedPosition.y}%`,
+              }}
+              animate={{
+                opacity: isVisible ? 1 : 0,
+                left: `${position.x}%`,
+                top: `${position.y}%`,
+              }}
+              transition={{
+                opacity: {
+                  duration: 0.5,
+                  delay: showContent && !projectsOpen ? index * 0.12 : 0,
+                  ease: "easeOut",
+                },
+                left: { duration: 1, ease: moveEase },
+                top: { duration: 1, ease: moveEase },
+              }}
+            >
+              {[1, 2, 3].map((tile) => (
+                <div
+                  className={`image-tile tile-${tile}`}
+                  key={tile}
+                />
+              ))}
+            </motion.div>
+          );
+        })}
       </div>
 
       {/* PROJECTS TRIGGER */}
