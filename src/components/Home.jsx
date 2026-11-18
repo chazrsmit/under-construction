@@ -4,15 +4,15 @@ import "./home.css";
 
 export default function Home() {
   const [showContent, setShowContent] = useState(false);
-
+  const [activeTile, setActiveTile] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   useEffect(()=> {
-    const checkSize = () => setIsMobile(window.innerWidth < 768)
-    checkSize()
+    const checkSize = () => setIsMobile(window.innerWidth < 768);
+    checkSize();
 
-    window.addEventListener("resize", checkSize)
-    return () => window.removeEventListener("resize", checkSize)
-  }, [])
+    window.addEventListener("resize", checkSize);
+    return () => window.removeEventListener("resize", checkSize);
+  }, []);
 
   return (
     <main className="home">
@@ -95,7 +95,12 @@ export default function Home() {
         transition={{ duration: 0.8, ease: "easeOut" }}
         >
         {[1, 2, 3, 4].map((tile) => (
-            <div className={`image-tile tile-${tile}`} key={tile} />
+            <div
+            className={`image-tile tile-${tile} ${!activeTile ? '' : activeTile === tile ? '' : 'faded'}`}
+            key={tile}
+            onMouseEnter={() => setActiveTile(tile)}
+            onMouseLeave={() => setActiveTile(null)}
+            />
         ))}
         </motion.div>
 
@@ -175,7 +180,7 @@ export default function Home() {
         animate={{ opacity: showContent ? 1 : 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
-        <p>hi, i'm a web designer and developer (...)</p>
+        <p>hi, i'm a web designer and developer <span>(...)</span></p>
       </motion.div>
 
       {/* CONSTRUCTION MESSAGE */}

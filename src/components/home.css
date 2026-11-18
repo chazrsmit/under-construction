@@ -27,12 +27,12 @@
   font-size: 24px;
 }
 
-.projects-link p > span {
+.projects-link p > span, .intro-link p > span, .intro-link p {
     transition: opacity 0.5s ease-out;
     cursor: e-resize;
 }
 
-.projects-link p > span:hover {
+.projects-link p > span:hover, .intro-link p:hover > span {
     opacity: 0.2;
 }
 
@@ -149,7 +149,7 @@
   top: 18px;
   right: 18px;
   display: flex;
-  gap: 2px;
+  /* gap: 3px; */
   z-index: 2;
 }
 
@@ -160,6 +160,13 @@
   background-image: url("/images/forest-texture.png");
   background-size: 300% 100%;
   background-repeat: no-repeat;
+
+  transition: opacity 0.5s ease-out;
+  cursor: e-resize;
+}
+
+.image-tile.faded {
+    opacity: 0.2;
 }
 
 .tile-1 {
@@ -228,7 +235,7 @@
   .mobile-image-block {
     position: absolute;
     display: flex;
-    gap: 2px;
+    /* gap: 2px; */
   }
 
   .mobile-image-block .image-tile {
