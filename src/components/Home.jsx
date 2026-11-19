@@ -11,6 +11,24 @@ const projects = [
   { name: "napolinapoli", description: "(digital project)" },
 ];
 
+// Mobile tiles per row.
+// false = option 1: rows of 3 on load, tiles 4-6 grow in when projects open.
+// true  = option 2: rows of 6 from the start, they only re-arrange.
+const ROWS_OF_SIX_FROM_START = false;
+
+const TILES_CLOSED = 3;
+const TILES_OPEN = 6;
+
+// Must match `.mobile-image-block .image-tile` width/height in home.css
+const MOBILE_TILE_SIZE = 21;
+
+// Tiles alternate: tile1, tile2, tile1, tile2, ...
+// BASE_URL already ends with a slash (e.g. "/repo-name/" on GitHub Pages)
+const MOBILE_TILE_IMAGES = [
+  `${import.meta.env.BASE_URL}images/tile1.png`,
+  `${import.meta.env.BASE_URL}images/tile2.png`,
+];
+
 // Closed state: the 14 blocks form the diagonal S-curve
 const mobileImagePositions = [
   { x: 87, y: 20 },
@@ -29,23 +47,23 @@ const mobileImagePositions = [
   { x: 89, y: 72 },
 ];
 
-// Projects open: all 14 blocks scattered (393 x 852 frame).
-// Indices 0-8 match the screenshot, 9-13 fill the empty zones.
+// Projects open: 11 blocks, positions taken from the project page screenshot (393 x 852 frame).
+// The remaining blocks (index 11+) fade out while the list is open.
 const mobileImagePositionsOpen = [
-  { x: 29, y: 0 },
-  { x: 58.5, y: 4.5 },
-  { x: 87.5, y: 9.6 },
-  { x: 97, y: 31.2 },
-  { x: 66.7, y: 34.5 },
-  { x: 49, y: 44.4 },
-  { x: 73, y: 53.1 },
-  { x: 75.6, y: 90.4 },
-  { x: 87, y: 98 },
-  { x: 56, y: 16 },
-  { x: 33, y: 23 },
-  { x: 70, y: 64 },
-  { x: 30, y: 72 },
-  { x: 60, y: 79 },
+  { x: 40.8, y: 0 },
+  { x: 70.6, y: 7.2 },
+  { x: 86, y: 25 },
+  { x: 56.5, y: 30 },
+  { x: 40.7, y: 40.4 },
+  { x: 120.4, y: 48.2 },
+  { x: 60.3, y: 54.5 },
+  { x: 87.8, y: 61.9 },
+  { x: 92.9, y: 82.5 },
+  { x: 62.6, y: 86 },
+  { x: 36.9, y: 92.6 },
+   { x: 120.4, y: 100.2 },
+    { x: 120.4, y: 110.2 },
+     { x: 120.4, y: 113.2 },
 ];
 
 const moveEase = [0.22, 1, 0.36, 1];
@@ -220,10 +238,11 @@ export default function Home() {
       {/* MOBILE IMAGE COMPOSITION - 14 BLOCKS, REPOSITIONED WHEN PROJECTS OPEN */}
       <div className="mobile-image-composition">
         {mobileImagePositions.map((closedPosition, index) => {
-          const position = projectsOpen
-            ? mobileImagePositionsOpen[index]
-            : closedPosition;
-          const isVisible = showContent;
+          const openPosition = mobileImagePositionsOpen[index];
+          const position =
+            projectsOpen && openPosition ? openPosition : closedPosition;
+          const isVisible = showContent && !(projectsOpen && !openPosition);
+          const showExtraTiles = ROWS_OF_SIX_FROM_START || projectsOpen;
 
           return (
             <motion.div
@@ -249,12 +268,42 @@ export default function Home() {
                 top: { duration: 1, ease: moveEase },
               }}
             >
-              {[1, 2, 3].map((tile) => (
-                <div
-                  className={`image-tile tile-${tile}`}
-                  key={tile}
-                />
-              ))}
+              {Array.from({ length: TILES_OPEN }, (_, tileIndex) => {
+                const isExtra = tileIndex >= TILES_CLOSED;
+
+                return (
+                  <motion.div
+                    className="image-tile"
+                    key={tileIndex}
+                    initial={false}
+                    animate={
+                      isExtra
+                        ? {
+                            width: showExtraTiles ? MOBILE_TILE_SIZE : 0,
+                            opacity: showExtraTiles ? 1 : 0,
+                          }
+                        : undefined
+                    }
+                    style={{
+                      backgroundImage: `url("${
+                        MOBILE_TILE_IMAGES[tileIndex % MOBILE_TILE_IMAGES.length]
+                      }")`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      // framer drives opacity on the extra tiles, so skip the CSS opacity transition
+                      ...(isExtra ? { transition: "none" } : {}),
+                    }}
+                    transition={{
+                      duration: 0.8,
+                      ease: moveEase,
+                      delay:
+                        isExtra && projectsOpen
+                          ? (tileIndex - TILES_CLOSED) * 0.1
+                          : 0,
+                    }}
+                  />
+                );
+              })}
             </motion.div>
           );
         })}

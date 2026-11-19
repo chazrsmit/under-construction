@@ -339,6 +339,7 @@ body {
   .mobile-image-block .image-tile {
     width: 21px;
     height: 21px;
+    transform: scaleX(-1);
   }
 
   /* SECOND GRADIENT GROUP */
