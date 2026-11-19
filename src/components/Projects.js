@@ -21,7 +21,7 @@ export function getProjects(isMobile) {
       show1: "images/litteria1.png",
       show2: "images/litteria2.png",
       show3: "images/litteria3.png",
-      caption1: "texte",
+      caption1: "Homepage of Litteria",
       caption2: "",
       caption3: "",
     },
