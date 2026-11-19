@@ -1,20 +1,29 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useMemo } from "react";
+import {
+  motion,
+  AnimatePresence,
+  useMotionValue,
+  useSpring,
+  useTransform,
+} from "framer-motion";
+import { useNavigate, useOutlet } from "react-router-dom";
+import { getProjects } from "./Projects";
 import "./home.css";
+import "./site-nav.css";
 
 const projects = [
-  { name: "agendive", description: "(app & website project)" },
-  { name: "litteria", description: "(e-commerce website)" },
-  { name: "oh word", description: "(web application)" },
-  { name: "la coeh", description: "(website & identity)" },
-  { name: "attuned", description: "(visual identity & website)" },
-  { name: "napolinapoli", description: "(digital project)" },
+  { id: "agendive", name: "agendive", description: "(app & website project)" },
+  { id: "litteria", name: "litteria", description: "(e-commerce website)" },
+  { id: "oh-word", name: "oh word", description: "(web application)" },
+  { id: "la-coeh", name: "la coeh", description: "(website & identity)" },
+  { id: "attuned", name: "attuned", description: "(visual identity & website)" },
+  { id: "napolinapoli", name: "napolinapoli", description: "(digital project)" },
 ];
 
 // Mobile tiles per row.
 // false = option 1: rows of 3 on load, tiles 4-6 grow in when projects open.
 // true  = option 2: rows of 6 from the start, they only re-arrange.
-const ROWS_OF_SIX_FROM_START = false;
+const ROWS_OF_SIX_FROM_START = true;
 
 const TILES_CLOSED = 3;
 const TILES_OPEN = 6;
@@ -29,26 +38,27 @@ const MOBILE_TILE_IMAGES = [
   `${import.meta.env.BASE_URL}images/tile2.png`,
 ];
 
-// Closed state: the 14 blocks form the diagonal S-curve
+// Closed state: staircase shape. x < 0 lets a block bleed off the left edge.
+// Blocks 9-13 wait off-screen on the right and slide in when projects open.
 const mobileImagePositions = [
-  { x: 87, y: 20 },
-  { x: 71, y: 23 },
-  { x: 55, y: 26 },
-  { x: 39, y: 29 }, 
-  { x: 23, y: 33 },
-  { x: 8, y: 37 },
-  { x: -3, y: 43 },
-  { x: 0, y: 51 },
-  { x: 6, y: 57 },
-  { x: 22, y: 60 },
-  { x: 39, y: 63 },
-  { x: 56, y: 66 },
-  { x: 73, y: 69 },
-  { x: 89, y: 72 },
+  { x: 85.2, y: 19 },
+  { x: 51.1, y: 20.4 },
+  { x: 18.3, y: 24.2 },
+  { x: -8.4, y: 33.3 },
+  { x: -23.2, y: 47.2 },
+  { x: -17.6, y: 61.7 },
+  { x: 8.7, y: 71.5 },
+  { x: 39.4, y: 77.9 },
+  { x: 72.3, y: 81.6 },
+  { x: 120.4, y: 86 },
+  { x: 120.4, y: 92.6 },
+  { x: 120.4, y: 100.2 },
+  { x: 120.4, y: 110.2 },
+  { x: 120.4, y: 113.2 },
 ];
 
-// Projects open: 11 blocks, positions taken from the project page screenshot (393 x 852 frame).
-// The remaining blocks (index 11+) fade out while the list is open.
+// Projects open: one position per block (393 x 852 frame).
+// x: 120.4 or y > 100 parks a block off-screen.
 const mobileImagePositionsOpen = [
   { x: 40.8, y: 0 },
   { x: 70.6, y: 7.2 },
@@ -61,20 +71,74 @@ const mobileImagePositionsOpen = [
   { x: 92.9, y: 82.5 },
   { x: 62.6, y: 86 },
   { x: 36.9, y: 92.6 },
-   { x: 120.4, y: 100.2 },
-    { x: 120.4, y: 110.2 },
-     { x: 120.4, y: 113.2 },
+  { x: 120.4, y: 100.2 },
+  { x: 120.4, y: 110.2 },
+  { x: 120.4, y: 113.2 },
 ];
 
 const moveEase = [0.22, 1, 0.36, 1];
 
+// Follows the details page scroll: slides to the right with its own up/down drift
+function MobileBlock({ progress, scatter, children, ...motionProps }) {
+  const x = useTransform(progress, [0, 1], [0, scatter.dx]);
+  const y = useTransform(progress, [0, 1], [0, scatter.dy]);
+
+  return (
+    <motion.div {...motionProps} style={{ x, y, willChange: "transform" }}>
+      {children}
+    </motion.div>
+  );
+}
+
 export default function Home() {
   const [showContent, setShowContent] = useState(false);
   const [activeTile, setActiveTile] = useState(null);
-  const [projectsOpen, setProjectsOpen] = useState(false);
   const [hoveredProject, setHoveredProject] = useState(null);
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  const navigate = useNavigate();
+  const projectsData = getProjects(isMobile);
+
+  // the child route (project details) renders through this outlet
+  const outlet = useOutlet({ isMobile, projects: projectsData });
+  const isDetail = Boolean(outlet);
+  const isMobileDetail = isMobile && isDetail;
+
+  // landing directly on a project page keeps the tiles in their "projects open" layout
+  const [projectsOpen, setProjectsOpen] = useState(isDetail);
+
+  // mobile: the tiles follow the scroll of the details page and slide out to the right
+  const scrollY = useMotionValue(0);
+  const smoothScroll = useSpring(scrollY, { stiffness: 120, damping: 26, mass: 0.4 });
+  const progress = useTransform(smoothScroll, [0, 360], [0, 1]);
+
+  // random but stable: how far right each block goes and how much it drifts up or down
+  const scatter = useMemo(
+    () =>
+      mobileImagePositions.map(() => ({
+        dx: window.innerWidth * (1.3 + Math.random() * 0.7),
+        dy: (Math.random() < 0.5 ? -1 : 1) * (40 + Math.random() * 140),
+      })),
+    []
+  );
+
+  // keeps the tiles above the details until the details have finished fading out
+  const [detailMounted, setDetailMounted] = useState(isDetail);
+
+  useEffect(() => {
+    if (isDetail) setDetailMounted(true);
+  }, [isDetail]);
+
+  useEffect(() => {
+    if (!isDetail) scrollY.set(0);
+  }, [isDetail, scrollY]);
+
+  const handleProjectClick = (project) => {
+    if (!projectsData.some((p) => p.id === project.id)) return;
+    setHoveredProject(null);
+    navigate(`/project/${project.id}`);
+  };
 
   useEffect(() => {
     const checkSize = () => setIsMobile(window.innerWidth < 768);
@@ -104,7 +168,7 @@ export default function Home() {
           top: "20px",
           left: "18px",
           x: 0,
-          y: 0,
+          y: isMobileDetail ? -100 : 0,
           fontSize: "16px",
         }}
         transition={{
@@ -114,27 +178,27 @@ export default function Home() {
           },
           top: {
             duration: 1.2,
-            delay: 2,
+            delay: showContent ? 0 : 2,
             ease: [0.22, 1, 0.36, 1],
           },
           left: {
             duration: 1.2,
-            delay: 2,
+            delay: showContent ? 0 : 2,
             ease: [0.22, 1, 0.36, 1],
           },
           x: {
             duration: 1.2,
-            delay: 2,
+            delay: showContent ? 0 : 2,
             ease: [0.22, 1, 0.36, 1],
           },
           y: {
             duration: 1.2,
-            delay: 2,
+            delay: showContent ? 0 : 2,
             ease: [0.22, 1, 0.36, 1],
           },
           fontSize: {
             duration: 1.2,
-            delay: 2,
+            delay: showContent ? 0 : 2,
             ease: [0.22, 1, 0.36, 1],
           },
         }}
@@ -142,6 +206,17 @@ export default function Home() {
       >
         <h1>Charlotte Smit</h1>
       </motion.div>
+
+      {/* ABOUT / CONTACT - desktop only */}
+      <motion.nav
+        className="site-nav"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: showContent ? 1 : 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+      >
+        <button type="button">about</button>
+        <button type="button">contact</button>
+      </motion.nav>
 
       {/* FIRST GROUP OF GRADIENT SQUARES */}
       <motion.div
@@ -154,6 +229,7 @@ export default function Home() {
           bottom: isMobile ? "auto" : "20px",
           left: isMobile ? "14px" : "50%",
           x: isMobile ? 0 : "-50%",
+          y: isMobileDetail ? -150 : 0,
           // flexDirection: isMobile && projectsOpen ? "column" : "row",
           // gap: isMobile && projectsOpen ? "12px" : "22px",
         }}
@@ -178,8 +254,12 @@ export default function Home() {
         initial={{ opacity: 0 }}
         animate={{
           opacity: showContent && isMobile ? 1 : 0,
+          y: isMobileDetail ? 120 : 0,
         }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        transition={{
+          opacity: { duration: 0.8, ease: "easeOut" },
+          y: { duration: 1, ease: moveEase },
+        }}
       >
         {[1, 2, 3, 4].map((square) => (
           <div
@@ -236,7 +316,12 @@ export default function Home() {
       </motion.div>
 
       {/* MOBILE IMAGE COMPOSITION - 14 BLOCKS, REPOSITIONED WHEN PROJECTS OPEN */}
-      <div className="mobile-image-composition">
+      <motion.div
+        className="mobile-image-composition"
+        style={{
+          zIndex: detailMounted || isDetail ? 30 : 2,
+        }}
+      >
         {mobileImagePositions.map((closedPosition, index) => {
           const openPosition = mobileImagePositionsOpen[index];
           const position =
@@ -245,7 +330,9 @@ export default function Home() {
           const showExtraTiles = ROWS_OF_SIX_FROM_START || projectsOpen;
 
           return (
-            <motion.div
+            <MobileBlock
+              progress={progress}
+              scatter={scatter[index]}
               className="mobile-image-block"
               key={index}
               initial={{
@@ -304,17 +391,18 @@ export default function Home() {
                   />
                 );
               })}
-            </motion.div>
+            </MobileBlock>
           );
         })}
-      </div>
+      </motion.div>
 
       {/* PROJECTS TRIGGER */}
       <motion.div
         className="projects-link"
+        style={{ pointerEvents: isDetail ? "none" : "auto" }}
         initial={{ opacity: 0 }}
         animate={{
-          opacity: showContent ? 1 : 0,
+          opacity: showContent && !isDetail ? 1 : 0,
           left: projectsOpen && isMobile ? "62%" : "50%",
         }}
         transition={{
@@ -338,8 +426,9 @@ export default function Home() {
       {/* PROJECT LIST */}
       <motion.div
         className="project-list"
+        style={{ pointerEvents: isDetail ? "none" : "auto" }}
         initial="closed"
-        animate={projectsOpen ? "open" : "closed"}
+        animate={projectsOpen && !isDetail ? "open" : "closed"}
         variants={{
           closed: {},
           open: {
@@ -358,11 +447,11 @@ export default function Home() {
             className="project-item"
             key={project.name}
             variants={{
-              closed: { opacity: 0, y: 8 },
-              open: { opacity: 1, y: 0 },
+              closed: { opacity: 0, y: 8, filter: "blur(10px)" },
+              open: { opacity: 1, y: 0, filter: "blur(0px)" },
             }}
             transition={{
-              duration: 0.6,
+              duration: 0.9,
               ease: "easeOut",
             }}
             onMouseMove={(event) => {
@@ -379,6 +468,7 @@ export default function Home() {
               }
             }}
             onMouseLeave={() => setHoveredProject(null)}
+            onClick={() => handleProjectClick(project)}
           >
             <motion.span
               animate={{ opacity: isFaded ? 0.2 : 1 }}
@@ -417,8 +507,14 @@ export default function Home() {
       <motion.div
         className="intro-link"
         initial={{ opacity: 0 }}
-        animate={{ opacity: showContent ? 1 : 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        animate={{
+          opacity: showContent ? 1 : 0,
+          y: isMobileDetail ? 90 : 0,
+        }}
+        transition={{
+          opacity: { duration: 0.8, ease: "easeOut" },
+          y: { duration: 1, ease: moveEase },
+        }}
       >
         <p>
           <span>(+)</span> hi, i'm a web designer and developer <span>(...)</span>
@@ -434,6 +530,48 @@ export default function Home() {
       >
         <p>iteration 1.<span>?</span></p>
       </motion.div>
+
+      {/* PROJECT DETAILS (child route) */}
+      <AnimatePresence onExitComplete={() => setDetailMounted(false)}>
+        {isDetail && (
+          <motion.div
+            key="details"
+            className="details-layer"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            onScroll={(event) => scrollY.set(event.currentTarget.scrollTop)}
+          >
+            {outlet}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* CLOSE BUTTON - highest z-index, above the tiles */}
+      <AnimatePresence>
+        {isDetail && (
+          <motion.button
+            key="close"
+            type="button"
+            className="detail-close"
+            onClick={() => navigate("/")}
+            initial={{ opacity: 0, filter: "blur(8px)" }}
+            animate={{
+              opacity: 1,
+              filter: "blur(0px)",
+              transition: { duration: 0.8, delay: 0.7, ease: "easeOut" },
+            }}
+            exit={{
+              opacity: 0,
+              filter: "blur(8px)",
+              transition: { duration: 0.3 },
+            }}
+          >
+            close
+          </motion.button>
+        )}
+      </AnimatePresence>
 
     </main>
   );

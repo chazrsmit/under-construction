@@ -3,6 +3,7 @@
   --font-main: "Barlaxent";
   --font-description: "Uncut Sans";
   --font-sub: "Averia Serif Libre";
+  --font-detail: "Newsreader";
   --color-background: #F5F5F5;
 }
 
@@ -23,6 +24,20 @@ body {
 
 
 /* FONTS */
+@font-face {
+  font-family: 'Newsreader';
+  src: url('/fonts/Newsreader16pt-Italic.ttf') format('truetype');
+  font-style: italic;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Newsreader';
+  src: url('/fonts/Newsreader16pt-Regular.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+}
+
 @font-face {
   font-family: 'Uncut Sans';
   src: url('/fonts/UncutSans-Light.otf') format('opentype');

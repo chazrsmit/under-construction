@@ -1,0 +1,32 @@
+/* about / contact, next to the site title (desktop only) */
+
+.site-nav {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .site-nav {
+    position: absolute;
+    top: 22px;
+    left: 360px;
+    z-index: 30;
+    display: flex;
+    gap: 52px;
+  }
+
+  .site-nav button {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font-family: var(--font-main);
+    font-size: 16px;
+    line-height: 16px;
+    cursor: pointer;
+    transition: opacity 0.5s ease-out;
+  }
+
+  .site-nav button:hover {
+    opacity: 0.2;
+  }
+}

@@ -1,0 +1,298 @@
+/* --------------------------------
+   PROJECT DETAILS
+-------------------------------- */
+
+/* mobile: the layer is the scroller */
+.details-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* highest z-index of the page, above the tiles */
+.detail-close {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 100;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-family: var(--font-description);
+  font-size: 18px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.detail-page {
+  position: relative;
+  min-height: 100%;
+  padding: 64px 22px 120px;
+  font-family: var(--font-detail);
+  color: #111;
+}
+
+.detail-title {
+  /* margin: 0 0 20px; */
+  padding-top: 6px;
+  line-height: 0;
+  overflow: visible;
+
+}
+
+/* .detail-title img {
+  display: block;
+  height: 48px;
+  width: auto;
+  max-width: 100%;
+} */
+
+.detail-summary {
+  margin: 0 0 20px;
+  font-family: var(--font-description);
+  font-size: 18px;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.detail-meta p {
+  margin: 0 0 4px;
+  font-family: var(--font-description);
+  font-size: 14px;
+}
+
+.detail-taglines {
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-detail);
+  font-size: 18px;
+  font-style: italic;
+  line-height: 1.2;
+}
+
+.detail-preview-link {
+  display: inline-block;
+  margin: 20px 0 28px;
+  color: inherit;
+  font-family: var(--font-description);
+  font-size: 14px;
+}
+
+.detail-gradient-column {
+  display: none;
+}
+
+/* sections (mobile) */
+
+.detail-section {
+  margin-bottom: 44px;
+}
+
+.detail-figure {
+  margin: 0 -22px 14px;
+}
+
+.detail-caption {
+  margin: 8px 22px 0;
+  font-family: var(--font-description);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.detail-text {
+  font-family: var(--font-detail);
+}
+
+.detail-text p {
+  margin: 0 0 14px;
+  font-size: 18px;
+  line-height: 1.1;
+}
+
+.detail-text p:first-child {
+  text-indent: 1.6em;
+}
+
+.detail-section--first .detail-text p:first-child::first-letter,
+.detail-text--first p:first-child::first-letter {
+  font-family: var(--font-title);
+  font-size: 1.8em;
+  line-height: 0;
+}
+
+/* desktop-only panels */
+
+.detail-left,
+.detail-right {
+  display: none;
+}
+
+/* --------------------------------
+   BLUR IMAGE PLACEHOLDER
+-------------------------------- */
+
+.blur-image {
+  position: relative;
+  overflow: hidden;
+  background: #e4e4e4;
+}
+
+.blur-image__placeholder,
+.blur-image__full {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.blur-image__placeholder {
+  filter: blur(14px);
+  transform: scale(1.12);
+  transition: opacity 0.8s ease-out;
+}
+
+.blur-image__full {
+  opacity: 0;
+  filter: blur(10px);
+  transition: opacity 0.8s ease-out, filter 0.8s ease-out;
+}
+
+.blur-image.is-loaded .blur-image__full {
+  opacity: 1;
+  filter: blur(0);
+}
+
+.blur-image.is-loaded .blur-image__placeholder {
+  opacity: 0;
+}
+
+/* --------------------------------
+   DESKTOP: text fixed on the left, images scroll on the right
+-------------------------------- */
+
+@media (min-width: 768px) {
+
+  :root {
+    --detail-pad-top: 64px;
+    --detail-title-h: 56px;
+  }
+
+  /* nothing scrolls on the layer itself, the right panel does */
+  .details-layer {
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  /* right side, baseline aligned with the bottom of the title:
+     pad + title padding (6px) + title height, minus the button's height and a small nudge */
+  .detail-close {
+    top: calc(var(--detail-pad-top) + 6px + var(--detail-title-h) - 18px);
+    right: 18px;
+    left: auto;
+    font-size: 15px;
+    line-height: 1;
+  }
+
+  .detail-left,
+  .detail-right {
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    pointer-events: auto;
+    font-family: var(--font-detail);
+    color: #111;
+  }
+
+  .detail-left {
+    left: 0;
+    width: 58%;
+    padding: var(--detail-pad-top) 18px 24px;
+    /* only scrolls if the text is taller than the window */
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+
+  .detail-left::-webkit-scrollbar {
+    display: none;
+  }
+
+  .detail-title {
+    margin: 0 0 20px;
+  }
+
+  .detail-title img {
+    height: var(--detail-title-h);
+  }
+
+  .detail-summary {
+    max-width: 640px;
+  }
+
+  .detail-gradient-column {
+    position: fixed;
+    top: 198px;
+    left: 21px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .detail-preview-link {
+    position: fixed;
+    top: 420px;
+    left: 20px;
+    margin: 0;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+  }
+
+  .detail-body {
+    max-width: 640px;
+    padding-left: 58px;
+  }
+
+  .detail-text {
+    margin-bottom: 10px;
+  }
+
+  .detail-text p {
+    margin: 0 0 8px;
+    font-size: 16px;
+    line-height: 1.05;
+  }
+
+  /* right: the only scrollable part */
+  .detail-right {
+    right: 0;
+    width: 42%;
+    padding-right: 18px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .detail-images {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    /* pushes the first image to the bottom right of the window */
+    padding-top: 65svh;
+    padding-bottom: 80px;
+  }
+
+  .detail-figure {
+    margin: 0;
+  }
+
+  .detail-caption {
+    margin: 8px 0 0;
+  }
+}
