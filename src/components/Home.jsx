@@ -372,7 +372,7 @@ export default function Home() {
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
         <p>
-          hi, i'm a web designer and developer <span>(...)</span>
+          <span>(+)</span> hi, i'm a web designer and developer <span>(...)</span>
         </p>
       </motion.div>
 
