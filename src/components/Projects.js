@@ -1,12 +1,13 @@
 // Prefixes a public/ path with Vite's base URL (needed on GitHub Pages)
 export const asset = (path) => (path ? `${import.meta.env.BASE_URL}${path}` : "");
 
-export function getProjects(isMobile) {
+export default function getProjects(isMobile) {
   return [
     {
       id: "litteria",
       title: "Litteria",
-    //   subtitle: "front-end, website",
+    //subtitle: "front-end, website",
+      titleImg: "images/litteria-titre.svg",
       technologies: "react, next.js, lenis, framer, bootstrap",
       link: "https://litteria-new.vercel.app/",
       top: isMobile ? null : "18%",
