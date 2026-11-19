@@ -172,8 +172,31 @@ export default function Home() {
       </motion.div>
 
       {/* DESKTOP IMAGE BLOCK */}
+      {/* TOP RIGHT  */}
       <motion.div
         className="desktop-image-block"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: showContent ? 1 : 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+      >
+        {[1, 2, 3, 4].map((tile) => (
+          <div
+            className={`image-tile tile-${tile} ${
+              !activeTile
+                ? ""
+                : activeTile === tile
+                ? ""
+                : "faded"
+            }`}
+            key={tile}
+            onMouseEnter={() => setActiveTile(tile)}
+            onMouseLeave={() => setActiveTile(null)}
+          />
+        ))}
+      </motion.div>
+      {/* BOTTOM LEFT */}
+      <motion.div
+        className="desktop-image-block2"
         initial={{ opacity: 0 }}
         animate={{ opacity: showContent ? 1 : 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}

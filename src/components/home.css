@@ -203,6 +203,16 @@ body {
   gap: 4px;
 }
 
+.desktop-image-block2 {
+  position: absolute;
+  bottom: 50px;
+  left: 18px;
+  display: flex;
+  flex-direction: column;
+  z-index: 2;
+  gap: 4px;
+}
+
 .image-tile {
   width: 28px;
   height: 28px;
@@ -210,12 +220,12 @@ body {
   background-size: 300% 100%;
   background-repeat: no-repeat;
   transition: opacity 0.8s ease-out;
-  cursor: e-resize;
+  /* cursor: e-resize; */
 }
 
-.image-tile.faded {
+/* .image-tile.faded {
   opacity: 0.2;
-}
+} */
 
 .tile-1 {
   background-position: left center;
@@ -263,7 +273,8 @@ body {
 
   .project-list {
     top: 50%;
-    left: 7%;
+    /* left: 7%; */
+    left: 14px;
     transform: translateY(-50%);
     flex-direction: column;
     align-items: flex-start;
@@ -306,7 +317,7 @@ body {
 
   /* IMAGE TILES */
 
-  .desktop-image-block {
+  .desktop-image-block, .desktop-image-block2 {
     display: none;
   }
 
@@ -337,7 +348,8 @@ body {
     display: flex;
     flex-direction: row;
     gap: 22px;
-    left: 26px;
+    /* left: 26px; */
+    left: 14px;
     bottom: 82px;
     transform: none;
     z-index: 5;
