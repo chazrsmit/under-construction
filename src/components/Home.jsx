@@ -278,7 +278,10 @@ export default function Home() {
           },
         }}
       >
-        {projects.map((project) => (
+      {projects.map((project) => {
+        const isFaded = hoveredProject !== null && hoveredProject !== project;
+
+        return (
           <motion.div
             className="project-item"
             key={project.name}
@@ -305,9 +308,16 @@ export default function Home() {
             }}
             onMouseLeave={() => setHoveredProject(null)}
           >
-            {project.name}
+            <motion.span
+              animate={{ opacity: isFaded ? 0.2 : 1 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+            >
+              {project.name}
+            </motion.span>
           </motion.div>
-        ))}
+        );
+      })}
+
       </motion.div>
 
 
@@ -320,10 +330,10 @@ export default function Home() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             style={{
-              left: cursorPosition.x + 12,
-              top: cursorPosition.y + 12,
+              left: cursorPosition.x ,
+              top: cursorPosition.y ,
             }}
-            transition={{ opacity: { duration: 0.15 } }}
+            transition={{ opacity: { duration: 0.4, ease: "easeInOut" } }}
           >
             {hoveredProject.description}
           </motion.div>

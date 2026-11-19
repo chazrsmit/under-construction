@@ -94,7 +94,12 @@ body {
   font-size: 21px;
   user-select: none;
   cursor: none;
+  /* transition: opacity 0.8s ease-out; */
 }
+
+/* .project-item.faded {
+  opacity: 0.2 !important;
+} */
 
 /* --------------------------------
    CUSTOM CURSOR
@@ -204,7 +209,7 @@ body {
   background-image: url("/images/forest-texture.png");
   background-size: 300% 100%;
   background-repeat: no-repeat;
-  transition: opacity 0.5s ease-out;
+  transition: opacity 0.8s ease-out;
   cursor: e-resize;
 }
 
@@ -359,6 +364,7 @@ body {
   .project-item {
     font-size: 21px;
   }
+
 
   .gradient-squares-bottom {
     display: none;
