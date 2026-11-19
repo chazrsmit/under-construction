@@ -7,7 +7,7 @@ import {
   useTransform,
 } from "framer-motion";
 import { useNavigate, useOutlet } from "react-router-dom";
-import getProjects from "./projects.js";
+import { getProjects } from "./projects.js";
 import "./home.css";
 import "./site-nav.css";
 
