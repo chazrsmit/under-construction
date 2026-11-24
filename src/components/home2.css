@@ -1,0 +1,476 @@
+
+/* --------------------------------
+   GLOBAL
+-------------------------------- */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f8f8f8;
+}
+
+.home {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+
+/* --------------------------------
+   TITLE
+-------------------------------- */
+
+.site-title {
+  position: absolute;
+  z-index: 10;
+  font-family: var(--font-title);
+  width: max-content;
+  white-space: nowrap;
+  line-height: 0.5;
+}
+
+.site-title h1 {
+  margin: 0;
+}
+
+/* --------------------------------
+   PROJECTS TRIGGER
+-------------------------------- */
+
+.projects-link {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  z-index: 20;
+  white-space: nowrap;
+  cursor: e-resize;
+}
+
+.projects-link p > span,
+.intro-link p > span,
+.intro-link p {
+  transition: opacity 0.5s ease-out;
+  cursor: e-resize;
+}
+
+.projects-link p > span:hover,
+.intro-link p:hover > span {
+  opacity: 0.2;
+}
+
+
+.projects-link p,
+.intro-link p,
+.construction p {
+  margin: 0;
+  font-family: var(--font-main);
+}
+
+/* --------------------------------
+   PROJECT LIST
+-------------------------------- */
+
+.project-list {
+  position: absolute;
+  top: calc(50% + 42px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  z-index: 15;
+  white-space: nowrap;
+}
+
+.project-item {
+  font-family: var(--font-main);
+  font-size: 21px;
+  user-select: none;
+  cursor: none;
+  /* transition: opacity 0.8s ease-out; */
+}
+
+/* .project-item.faded {
+  opacity: 0.2 !important;
+} */
+
+/* --------------------------------
+   CUSTOM CURSOR
+-------------------------------- */
+
+.project-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  pointer-events: none;
+  white-space: nowrap;
+  font-family: var(--font-main);
+  font-size: 14px;
+  /* margin-left: 12px; */
+  margin-top: 12px;
+}
+
+/* --------------------------------
+   INTRODUCTION
+-------------------------------- */
+
+.intro-link {
+  position: absolute;
+  bottom: 12px;
+  left: 18px;
+  font-size: 15px;
+}
+
+/* --------------------------------
+   CONSTRUCTION MESSAGE
+-------------------------------- */
+
+.construction {
+  position: absolute;
+  bottom: 12px;
+  right: 18px;
+  font-size: 15px;
+}
+
+.construction p > span {
+  font-family: var(--font-description);
+}
+
+/* --------------------------------
+   GRADIENT SQUARES
+-------------------------------- */
+
+.gradient-squares {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 22px;
+  z-index: 5;
+}
+
+.gradient-square {
+  width: 20px;
+  height: 20px;
+  background: radial-gradient(
+    circle,
+    #111 0%,
+    #333 35%,
+    #aaa 75%,
+    #eee 100%
+  );
+}
+
+.square-1,
+.square-2 {
+  background: radial-gradient(
+    circle,
+    #555 0%,
+    #999 50%,
+    #eee 100%
+  );
+}
+
+.square-3,
+.square-4 {
+  background: radial-gradient(
+    circle,
+    #000 0%,
+    #111 55%,
+    #aaa 100%
+  );
+}
+
+/* --------------------------------
+   DESKTOP IMAGE BLOCK
+-------------------------------- */
+
+.desktop-image-block {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  display: flex;
+  z-index: 2;
+  gap: 4px;
+}
+
+.desktop-image-block2 {
+  position: absolute;
+  bottom: 50px;
+  left: 18px;
+  display: flex;
+  flex-direction: column;
+  z-index: 2;
+  gap: 4px;
+}
+
+.image-tile {
+  /* width: 28px; */
+  width: 20px;
+  /* height: 28px; */
+  height: 20px;
+  background-image: url("/images/forest-texture.png");
+  background-size: 300% 100%;
+  background-repeat: no-repeat;
+  transition: opacity 0.8s ease-out;
+  /* cursor: e-resize; */
+}
+
+/* .image-tile.faded {
+  opacity: 0.2;
+} */
+
+.tile-1 {
+  background-position: left center;
+}
+
+.tile-2 {
+  background-position: center center;
+}
+
+.tile-3 {
+  background-position: right center;
+}
+
+.tile-4 {
+  background-position: center center;
+}
+
+/* --------------------------------
+   MOBILE IMAGE COMPOSITION
+-------------------------------- */
+
+.mobile-image-composition {
+  display: none;
+}
+
+/* --------------------------------
+   MOBILE
+-------------------------------- */
+
+@media (max-width: 767px) {
+
+  /* TITLE */
+
+  .site-title {
+    width: 190px;
+    white-space: normal;
+    line-height: 0.95;
+  }
+
+  /* PROJECTS */
+
+  .projects-link {
+    font-size: 23px;
+  }
+
+  .project-list {
+    top: 50%;
+    /* left: 7%; */
+    left: 14px;
+    transform: translateY(-50%);
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 12px;
+    white-space: normal;
+  }
+
+  .project-item {
+    font-size: 27px;
+    line-height: 1.15;
+    cursor: pointer;
+  }
+
+  /* INTRO */
+
+  .intro-link {
+    bottom: 16px;
+    left: 14px;
+    right: 14px;
+    font-size: 15px;
+  }
+
+  /* CONSTRUCTION */
+
+  .construction {
+    display: none;
+  }
+
+  /* GRADIENT SQUARES */
+
+  .gradient-squares-top {
+    top: 105px;
+    bottom: auto;
+    left: 26px;
+    transform: none;
+    flex-direction: row;
+    gap: 22px;
+  }
+
+  /* IMAGE TILES */
+
+  .desktop-image-block, .desktop-image-block2 {
+    display: none;
+  }
+
+  .mobile-image-composition {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .mobile-image-block {
+    position: absolute;
+    display: flex;
+    /* gap:3px; */
+
+  }
+
+  .mobile-image-block .image-tile {
+    width: 21px;
+    height: 21px;
+    transform: scaleX(-1);
+  }
+
+  /* SECOND GRADIENT GROUP */
+
+  .gradient-squares-bottom {
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    gap: 22px;
+    /* left: 26px; */
+    left: 14px;
+    bottom: 82px;
+    transform: none;
+    z-index: 5;
+  }
+
+  /* CURSOR */
+
+  .project-cursor {
+    display: none;
+  }
+
+}
+
+/* --------------------------------
+   DESKTOP
+-------------------------------- */
+
+@media (min-width: 768px) {
+
+  .project-list {
+    top: calc(50% + 42px);
+  }
+
+  .project-item {
+    font-size: 21px;
+  }
+
+
+  .gradient-squares-bottom {
+    display: none;
+  }
+
+}
+
+
+/* --------------------------------
+   PROJECT IMAGE PREVIEW
+-------------------------------- */
+
+.project-preview {
+  position: absolute;
+  top: calc(50% + 105px);
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: min(820px, 82vw);
+  height: 220px;
+
+  z-index: 8;
+  pointer-events: none;
+}
+
+.project-preview-image {
+  position: absolute;
+  display: block;
+
+  width: auto;
+  height: auto;
+  max-width: 32%;
+  max-height: 160px;
+
+  object-fit: contain;
+  will-change: opacity, transform, filter;
+}
+
+/* Individual image positions */
+
+.preview-image-1 {
+  left: 0%;
+  top: 10px;
+  width: 18%;
+  z-index: 2;
+}
+
+.preview-image-2 {
+  left: 12%;
+  top: 0;
+  width: 23%;
+  z-index: 3;
+}
+
+.preview-image-3 {
+  left: 27%;
+  top: 24px;
+  width: 17%;
+  z-index: 4;
+}
+
+.preview-image-4 {
+  left: 39%;
+  top: 8px;
+  width: 24%;
+  z-index: 5;
+}
+
+.preview-image-5 {
+  left: 54%;
+  top: 35px;
+  width: 19%;
+  z-index: 4;
+}
+
+.preview-image-6 {
+  left: 68%;
+  top: 12px;
+  width: 22%;
+  z-index: 3;
+}
+
+.preview-image-7 {
+  left: 83%;
+  top: 30px;
+  width: 17%;
+  z-index: 2;
+}
+
+@media (max-width: 767px) {
+  .project-preview {
+    display: none;
+  }
+}

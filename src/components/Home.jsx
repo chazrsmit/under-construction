@@ -1,4 +1,6 @@
+
 import { useState, useEffect, useMemo } from "react";
+
 import {
   motion,
   AnimatePresence,
@@ -6,109 +8,50 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
-import { useNavigate, useOutlet } from "react-router-dom";
+
+import {
+  useNavigate,
+  useOutlet,
+} from "react-router-dom";
+
 import { getProjects } from "./projects.js";
+
+import DesktopComposition from "./DesktopComposition";
+import CustomCursor from "./CustomCursor";
+
+import {
+  compositionProjects,
+} from "./compositionData";
+
 import "./home.css";
 import "./site-nav.css";
 
-const projects = [
-  {
-    id: "a-day-in-brussels",
-    name: "a day in brussels",
-    description: "(photography & digital project)",
-  },
-  {
-    id: "agendive",
-    name: "agendive",
-    description: "(app & website project)",
-  },
-  {
-    id: "attuned",
-    name: "attuned",
-    description: "(visual identity & website)",
-  },
-  {
-    id: "la-coeh",
-    name: "la coeh",
-    description: "(website & identity)",
-  },
-  {
-    id: "litteria",
-    name: "litteria",
-    description: "(e-commerce website)",
-  },
-  {
-    id: "napolinapoli",
-    name: "napolinapoli",
-    description: "(digital project)",
-  },
-  {
-    id: "oh-word",
-    name: "oh word",
-    description: "(web application)",
-  },
-];
+/* --------------------------------
+   PROJECTS
+-------------------------------- */
 
-const imagePath = (filename) =>
-  `${import.meta.env.BASE_URL}images/${filename}`;
+const projects = compositionProjects;
 
-const projectImages = {
-  "a-day-in-brussels": [
-    imagePath("aday1.png"),
-    imagePath("aday3.png"),
-  ],
+/* --------------------------------
+   MOBILE TILE SETTINGS
+-------------------------------- */
 
-  agendive: Array.from(
-    { length: 7 },
-    (_, index) => imagePath(`agendive${index + 1}.png`)
-  ),
-
-  attuned: Array.from(
-    { length: 7 },
-    (_, index) => imagePath(`attuned${index + 1}.png`)
-  ),
-
-  "la-coeh": Array.from(
-    { length: 7 },
-    (_, index) => imagePath(`la-coeh${index + 1}.png`)
-  ),
-
-  litteria: Array.from(
-    { length: 7 },
-    (_, index) => imagePath(`litteria${index + 1}.png`)
-  ),
-
-  napolinapoli: Array.from(
-    { length: 7 },
-    (_, index) => imagePath(`napolinapoli${index + 1}.png`)
-  ),
-
-  "oh-word": Array.from(
-    { length: 7 },
-    (_, index) => imagePath(`oh-word${index + 1}.png`)
-  ),
-};
-
-// Mobile tiles per row.
-// false = option 1: rows of 3 on load, tiles 4-6 grow in when projects open.
-// true  = option 2: rows of 6 from the start, they only re-arrange.
 const ROWS_OF_SIX_FROM_START = true;
 
 const TILES_CLOSED = 3;
 const TILES_OPEN = 6;
 
-// Must match `.mobile-image-block .image-tile` width/height in home.css
 const MOBILE_TILE_SIZE = 21;
 
-// Tiles alternate: tile1, tile2, tile1, tile2, ...
-// BASE_URL already ends with a slash (e.g. "/repo-name/" on GitHub Pages)
 const MOBILE_TILE_IMAGES = [
   `${import.meta.env.BASE_URL}images/tile1.png`,
   `${import.meta.env.BASE_URL}images/tile2.png`,
 ];
 
-// Closed state: staircase shape. x < 0 lets a block bleed off the left edge.
-// Blocks 9-13 wait off-screen on the right and slide in when projects open.
+/* --------------------------------
+   MOBILE CLOSED COMPOSITION
+-------------------------------- */
+
 const mobileImagePositions = [
   { x: 85.2, y: 19 },
   { x: 51.1, y: 20.4 },
@@ -126,8 +69,10 @@ const mobileImagePositions = [
   { x: 120.4, y: 113.2 },
 ];
 
-// Projects open: one position per block (393 x 852 frame).
-// x: 120.4 or y > 100 parks a block off-screen.
+/* --------------------------------
+   MOBILE OPEN COMPOSITION
+-------------------------------- */
+
 const mobileImagePositionsOpen = [
   { x: 40.8, y: 0 },
   { x: 70.6, y: 7.2 },
@@ -147,81 +92,190 @@ const mobileImagePositionsOpen = [
 
 const moveEase = [0.22, 1, 0.36, 1];
 
-// Follows the details page scroll: slides to the right with its own up/down drift
-function MobileBlock({ progress, scatter, children, ...motionProps }) {
-  const x = useTransform(progress, [0, 1], [0, scatter.dx]);
-  const y = useTransform(progress, [0, 1], [0, scatter.dy]);
+/* --------------------------------
+   MOBILE BLOCK COMPONENT
+-------------------------------- */
+
+function MobileBlock({
+  progress,
+  scatter,
+  children,
+  ...motionProps
+}) {
+  const x = useTransform(
+    progress,
+    [0, 1],
+    [0, scatter.dx]
+  );
+
+  const y = useTransform(
+    progress,
+    [0, 1],
+    [0, scatter.dy]
+  );
 
   return (
-    <motion.div {...motionProps} style={{ x, y, willChange: "transform" }}>
+    <motion.div
+      {...motionProps}
+      style={{
+        x,
+        y,
+        willChange: "transform",
+      }}
+    >
       {children}
     </motion.div>
   );
 }
 
+/* --------------------------------
+   HOME
+-------------------------------- */
+
 export default function Home() {
-  const [showContent, setShowContent] = useState(false);
-  const [activeTile, setActiveTile] = useState(null);
-  const [hoveredProject, setHoveredProject] = useState(null);
-  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [showContent, setShowContent] =
+    useState(false);
+
+  const [isMobile, setIsMobile] = useState(
+    window.innerWidth < 768
+  );
 
   const navigate = useNavigate();
+
   const projectsData = getProjects(isMobile);
 
-  // the child route (project details) renders through this outlet
-  const outlet = useOutlet({ isMobile, projects: projectsData });
+  /* --------------------------------
+     DETAILS ROUTING
+  -------------------------------- */
+
+  const outlet = useOutlet({
+    isMobile,
+    projects: projectsData,
+  });
+
   const isDetail = Boolean(outlet);
   const isMobileDetail = isMobile && isDetail;
 
-  // landing directly on a project page keeps the tiles in their "projects open" layout
-  const [projectsOpen, setProjectsOpen] = useState(isDetail);
+  const [projectsOpen, setProjectsOpen] =
+    useState(isDetail);
 
-  // mobile: the tiles follow the scroll of the details page and slide out to the right
+  const [detailMounted, setDetailMounted] =
+    useState(isDetail);
+
+  /* --------------------------------
+     DETAILS SCROLL
+  -------------------------------- */
+
   const scrollY = useMotionValue(0);
-  const smoothScroll = useSpring(scrollY, { stiffness: 120, damping: 26, mass: 0.4 });
-  const progress = useTransform(smoothScroll, [0, 360], [0, 1]);
 
-  // random but stable: how far right each block goes and how much it drifts up or down
+  const smoothScroll = useSpring(scrollY, {
+    stiffness: 120,
+    damping: 26,
+    mass: 0.4,
+  });
+
+  const progress = useTransform(
+    smoothScroll,
+    [0, 360],
+    [0, 1]
+  );
+
   const scatter = useMemo(
     () =>
       mobileImagePositions.map(() => ({
-        dx: window.innerWidth * (1.3 + Math.random() * 0.7),
-        dy: (Math.random() < 0.5 ? -1 : 1) * (40 + Math.random() * 140),
+        dx:
+          window.innerWidth *
+          (1.3 + Math.random() * 0.7),
+
+        dy:
+          (Math.random() < 0.5 ? -1 : 1) *
+          (40 + Math.random() * 140),
       })),
     []
   );
 
-  // keeps the tiles above the details until the details have finished fading out
-  const [detailMounted, setDetailMounted] = useState(isDetail);
+  /* --------------------------------
+     EFFECTS
+  -------------------------------- */
 
   useEffect(() => {
-    if (isDetail) setDetailMounted(true);
+    if (isDetail) {
+      setDetailMounted(true);
+    }
   }, [isDetail]);
 
   useEffect(() => {
-    if (!isDetail) scrollY.set(0);
+    if (!isDetail) {
+      scrollY.set(0);
+    }
   }, [isDetail, scrollY]);
 
+  useEffect(() => {
+    const checkSize = () =>
+      setIsMobile(window.innerWidth < 768);
+
+    checkSize();
+
+    window.addEventListener("resize", checkSize);
+
+    return () =>
+      window.removeEventListener(
+        "resize",
+        checkSize
+      );
+  }, []);
+
+  /* --------------------------------
+     PRELOAD DESKTOP IMAGES
+  -------------------------------- */
+
+  useEffect(() => {
+    const filenames = [
+      "background-element.svg",
+      ...compositionProjects.map(
+        (project) => project.image
+      ),
+    ];
+
+    filenames.forEach((filename) => {
+      const image = new Image();
+
+      image.src =
+        `${import.meta.env.BASE_URL}images/${filename}`;
+
+      image.decode().catch(() => {});
+    });
+  }, []);
+
+  /* --------------------------------
+     PROJECT NAVIGATION
+  -------------------------------- */
+
   const handleProjectClick = (project) => {
-    if (!projectsData.some((p) => p.id === project.id)) return;
-    setHoveredProject(null);
+    if (
+      !projectsData.some(
+        (p) => p.id === project.id
+      )
+    ) {
+      return;
+    }
+
     navigate(`/project/${project.id}`);
   };
 
-  useEffect(() => {
-    const checkSize = () => setIsMobile(window.innerWidth < 768);
-
-    checkSize();
-    window.addEventListener("resize", checkSize);
-
-    return () => window.removeEventListener("resize", checkSize);
-  }, []);
-
   return (
-    <main className={`home ${projectsOpen ? "projects-open" : ""}`}>
+    <main
+      className={`home
+        ${projectsOpen ? "projects-open" : ""}
+        ${!isMobile && !isDetail ? "desktop-homepage" : ""}
+      `}
+    >
+      {/* GLOBAL CUSTOM CURSOR */}
+
+      <CustomCursor />
 
       {/* TITLE */}
+
       <motion.div
         className="site-title"
         initial={{
@@ -245,92 +299,120 @@ export default function Home() {
             duration: 0.8,
             ease: "easeOut",
           },
+
           top: {
             duration: 1.2,
             delay: showContent ? 0 : 2,
-            ease: [0.22, 1, 0.36, 1],
+            ease: moveEase,
           },
+
           left: {
             duration: 1.2,
             delay: showContent ? 0 : 2,
-            ease: [0.22, 1, 0.36, 1],
+            ease: moveEase,
           },
+
           x: {
             duration: 1.2,
             delay: showContent ? 0 : 2,
-            ease: [0.22, 1, 0.36, 1],
+            ease: moveEase,
           },
+
           y: {
             duration: 1.2,
             delay: showContent ? 0 : 2,
-            ease: [0.22, 1, 0.36, 1],
+            ease: moveEase,
           },
+
           fontSize: {
             duration: 1.2,
             delay: showContent ? 0 : 2,
-            ease: [0.22, 1, 0.36, 1],
+            ease: moveEase,
           },
         }}
-        onAnimationComplete={() => setShowContent(true)}
+        onAnimationComplete={() =>
+          setShowContent(true)
+        }
       >
         <h1>Charlotte Smit</h1>
       </motion.div>
 
-      {/* ABOUT / CONTACT - desktop only */}
+      {/* NAVIGATION */}
+
       <motion.nav
         className="site-nav"
         initial={{ opacity: 0 }}
-        animate={{ opacity: showContent ? 1 : 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        animate={{
+          opacity: showContent ? 1 : 0,
+        }}
+        transition={{
+          duration: 0.8,
+          ease: "easeOut",
+        }}
       >
         <button type="button">about</button>
+
         <button type="button">contact</button>
+
+        <button type="button">
+          visual experiments
+        </button>
       </motion.nav>
 
-      {/* FIRST GROUP OF GRADIENT SQUARES */}
+      {/* FIRST GRADIENT GROUP */}
+
       <motion.div
-        layout
         className="gradient-squares gradient-squares-top"
         initial={{ opacity: 0 }}
         animate={{
           opacity: showContent ? 1 : 0,
-          top: isMobile ? "105px" : "auto",
-          bottom: isMobile ? "auto" : "20px",
-          left: isMobile ? "14px" : "50%",
-          x: isMobile ? 0 : "-50%",
           y: isMobileDetail ? -150 : 0,
-          // flexDirection: isMobile && projectsOpen ? "column" : "row",
-          // gap: isMobile && projectsOpen ? "12px" : "22px",
         }}
         transition={{
-          duration: 0.8,
-          ease: [0.22, 1, 0.36, 1],
-          layout: { duration: 0.8 },
+          opacity: {
+            duration: 0.8,
+            ease: "easeOut",
+          },
+
+          y: {
+            duration: 1,
+            ease: moveEase,
+          },
         }}
       >
         {[1, 2, 3, 4].map((square) => (
-          <motion.div
-            layout
+          <div
             className={`gradient-square square-${square}`}
             key={square}
           />
         ))}
       </motion.div>
 
-      {/* SECOND GROUP OF GRADIENT SQUARES - MOBILE */}
+      {/* SECOND GRADIENT GROUP */}
+
       <motion.div
         className="gradient-squares gradient-squares-bottom"
         initial={{ opacity: 0 }}
         animate={{
-          opacity: showContent && isMobile ? 1 : 0,
+          opacity: showContent ? 1 : 0,
           y: isMobileDetail ? 120 : 0,
         }}
         transition={{
-          opacity: { duration: 0.8, ease: "easeOut" },
-          y: { duration: 1, ease: moveEase },
+          opacity: {
+            duration: 0.8,
+            ease: "easeOut",
+          },
+
+          y: {
+            duration: 1,
+            ease: moveEase,
+          },
         }}
       >
-        {[1, 2, 3, 4].map((square) => (
+        {(isMobile
+          ? [1, 2, 3, 4]
+          : [4, 3, 2, 1]
+        ).map((square) => (
           <div
             className={`gradient-square square-${square}`}
             key={square}
@@ -338,291 +420,266 @@ export default function Home() {
         ))}
       </motion.div>
 
-      {/* DESKTOP IMAGE BLOCK */}
-      {/* TOP RIGHT  */}
-      <motion.div
-        className="desktop-image-block"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: showContent ? 1 : 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-      >
-        {[1, 2, 3, 4].map((tile) => (
-          <div
-            className={`image-tile tile-${tile} ${
-              !activeTile
-                ? ""
-                : activeTile === tile
-                ? ""
-                : "faded"
-            }`}
-            key={tile}
-            onMouseEnter={() => setActiveTile(tile)}
-            onMouseLeave={() => setActiveTile(null)}
-          />
-        ))}
-      </motion.div>
-      {/* BOTTOM LEFT */}
-      <motion.div
-        className="desktop-image-block2"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: showContent ? 1 : 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-      >
-        {[1, 2, 3, 4].map((tile) => (
-          <div
-            className={`image-tile tile-${tile} ${
-              !activeTile
-                ? ""
-                : activeTile === tile
-                ? ""
-                : "faded"
-            }`}
-            key={tile}
-            onMouseEnter={() => setActiveTile(tile)}
-            onMouseLeave={() => setActiveTile(null)}
-          />
-        ))}
-      </motion.div>
+      {/* --------------------------------
+          DESKTOP HOMEPAGE
+      -------------------------------- */}
 
-      {/* MOBILE IMAGE COMPOSITION - 14 BLOCKS, REPOSITIONED WHEN PROJECTS OPEN */}
-      <motion.div
-        className="mobile-image-composition"
-        style={{
-          zIndex: detailMounted || isDetail ? 30 : 2,
-        }}
-      >
-        {mobileImagePositions.map((closedPosition, index) => {
-          const openPosition = mobileImagePositionsOpen[index];
-          const position =
-            projectsOpen && openPosition ? openPosition : closedPosition;
-          const isVisible = showContent && !(projectsOpen && !openPosition);
-          const showExtraTiles = ROWS_OF_SIX_FROM_START || projectsOpen;
+      {!isMobile && !isDetail && (
+        <DesktopComposition
+          showContent={
+            showContent && !detailMounted
+          }
+          onProjectClick={handleProjectClick}
+        />
+      )}
 
-          return (
-            <MobileBlock
-              progress={progress}
-              scatter={scatter[index]}
-              className="mobile-image-block"
-              key={index}
-              initial={{
-                opacity: 0,
-                left: `${closedPosition.x}%`,
-                top: `${closedPosition.y}%`,
-              }}
-              animate={{
-                opacity: isVisible ? 1 : 0,
-                left: `${position.x}%`,
-                top: `${position.y}%`,
-              }}
-              transition={{
-                opacity: {
-                  duration: 0.5,
-                  delay: showContent && !projectsOpen ? index * 0.12 : 0,
-                  ease: "easeOut",
-                },
-                left: { duration: 1, ease: moveEase },
-                top: { duration: 1, ease: moveEase },
-              }}
-            >
-              {Array.from({ length: TILES_OPEN }, (_, tileIndex) => {
-                const isExtra = tileIndex >= TILES_CLOSED;
+      {/* --------------------------------
+          MOBILE IMAGE COMPOSITION
+      -------------------------------- */}
 
-                return (
-                  <motion.div
-                    className="image-tile"
-                    key={tileIndex}
-                    initial={false}
-                    animate={
-                      isExtra
-                        ? {
-                            width: showExtraTiles ? MOBILE_TILE_SIZE : 0,
-                            opacity: showExtraTiles ? 1 : 0,
-                          }
-                        : undefined
-                    }
-                    style={{
-                      backgroundImage: `url("${
-                        MOBILE_TILE_IMAGES[tileIndex % MOBILE_TILE_IMAGES.length]
-                      }")`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                      // framer drives opacity on the extra tiles, so skip the CSS opacity transition
-                      ...(isExtra ? { transition: "none" } : {}),
-                    }}
-                    transition={{
-                      duration: 0.8,
-                      ease: moveEase,
-                      delay:
-                        isExtra && projectsOpen
-                          ? (tileIndex - TILES_CLOSED) * 0.1
-                          : 0,
-                    }}
-                  />
-                );
-              })}
-            </MobileBlock>
-          );
-        })}
-      </motion.div>
-
-      {/* PROJECTS TRIGGER */}
-      <motion.div
-        className="projects-link"
-        style={{ pointerEvents: isDetail ? "none" : "auto" }}
-        initial={{ opacity: 0 }}
-        animate={{
-          opacity: showContent && !isDetail ? 1 : 0,
-          left: projectsOpen && isMobile ? "62%" : "50%",
-        }}
-        transition={{
-          opacity: { duration: 0.8 },
-          left: { duration: 1, ease: [0.22, 1, 0.36, 1] },
-        }}
-        onClick={() => {
-          setProjectsOpen((prev) => !prev);
-          setHoveredProject(null);
-        }}
-      >
-        <motion.p
-          className="projects-p"
-          animate={{ opacity: projectsOpen ? 0.2 : 1 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
+      {isMobile && (
+        <motion.div
+          className="mobile-image-composition"
+          style={{
+            zIndex:
+              detailMounted || isDetail ? 30 : 2,
+          }}
         >
-          (<span>projects</span>)
-        </motion.p>
-      </motion.div>
+          {mobileImagePositions.map(
+            (closedPosition, index) => {
+              const openPosition =
+                mobileImagePositionsOpen[index];
 
-      {/* PROJECT LIST */}
-      <motion.div
-        className="project-list"
-        style={{ pointerEvents: isDetail ? "none" : "auto" }}
-        initial="closed"
-        animate={projectsOpen && !isDetail ? "open" : "closed"}
-        variants={{
-          closed: {},
-          open: {
-            transition: {
-              staggerChildren: isMobile ? 0.12 : 0.14,
-              delayChildren: 0.2,
+              const position =
+                projectsOpen && openPosition
+                  ? openPosition
+                  : closedPosition;
+
+              const isVisible =
+                showContent &&
+                !(projectsOpen && !openPosition);
+
+              const showExtraTiles =
+                ROWS_OF_SIX_FROM_START ||
+                projectsOpen;
+
+              return (
+                <MobileBlock
+                  progress={progress}
+                  scatter={scatter[index]}
+                  className="mobile-image-block"
+                  key={index}
+                  initial={{
+                    opacity: 0,
+
+                    left:
+                      `${closedPosition.x}%`,
+
+                    top:
+                      `${closedPosition.y}%`,
+                  }}
+                  animate={{
+                    opacity: isVisible ? 1 : 0,
+
+                    left: `${position.x}%`,
+
+                    top: `${position.y}%`,
+                  }}
+                  transition={{
+                    opacity: {
+                      duration: 0.5,
+
+                      delay:
+                        showContent && !projectsOpen
+                          ? index * 0.12
+                          : 0,
+
+                      ease: "easeOut",
+                    },
+
+                    left: {
+                      duration: 1,
+                      ease: moveEase,
+                    },
+
+                    top: {
+                      duration: 1,
+                      ease: moveEase,
+                    },
+                  }}
+                >
+                  {Array.from(
+                    { length: TILES_OPEN },
+                    (_, tileIndex) => {
+                      const isExtra =
+                        tileIndex >= TILES_CLOSED;
+
+                      return (
+                        <motion.div
+                          className="image-tile"
+                          key={tileIndex}
+                          initial={false}
+                          animate={
+                            isExtra
+                              ? {
+                                  width:
+                                    showExtraTiles
+                                      ? MOBILE_TILE_SIZE
+                                      : 0,
+
+                                  opacity:
+                                    showExtraTiles
+                                      ? 1
+                                      : 0,
+                                }
+                              : undefined
+                          }
+                          style={{
+                            backgroundImage:
+                              `url("${
+                                MOBILE_TILE_IMAGES[
+                                  tileIndex %
+                                  MOBILE_TILE_IMAGES.length
+                                ]
+                              }")`,
+
+                            backgroundSize: "cover",
+
+                            backgroundPosition:
+                              "center",
+
+                            ...(isExtra
+                              ? { transition: "none" }
+                              : {}),
+                          }}
+                          transition={{
+                            duration: 0.8,
+                            ease: moveEase,
+
+                            delay:
+                              isExtra && projectsOpen
+                                ? (
+                                    tileIndex -
+                                    TILES_CLOSED
+                                  ) * 0.1
+                                : 0,
+                          }}
+                        />
+                      );
+                    }
+                  )}
+                </MobileBlock>
+              );
+            }
+          )}
+        </motion.div>
+      )}
+
+      {/* MOBILE PROJECTS TRIGGER */}
+
+      {isMobile && (
+        <motion.div
+          className="projects-link"
+          style={{
+            pointerEvents:
+              isDetail ? "none" : "auto",
+          }}
+          initial={{ opacity: 0 }}
+          animate={{
+            opacity:
+              showContent && !isDetail ? 1 : 0,
+
+            left:
+              projectsOpen ? "62%" : "50%",
+          }}
+          transition={{
+            opacity: { duration: 0.8 },
+
+            left: {
+              duration: 1,
+              ease: moveEase,
             },
-          },
-        }}
-      >
-      {projects.map((project) => {
-        const isFaded = hoveredProject !== null && hoveredProject !== project;
-
-        return (
-          <motion.div
-            className="project-item"
-            key={project.name}
-            variants={{
-              closed: { opacity: 0, y: 8, filter: "blur(10px)" },
-              open: { opacity: 1, y: 0, filter: "blur(0px)" },
+          }}
+          onClick={() =>
+            setProjectsOpen((previous) => !previous)
+          }
+        >
+          <motion.p
+            className="projects-p"
+            animate={{
+              opacity: projectsOpen ? 0.2 : 1,
             }}
             transition={{
-              duration: 0.9,
+              duration: 0.5,
               ease: "easeOut",
             }}
-            onMouseMove={(event) => {
-              if (!isMobile) {
-                setCursorPosition({
-                  x: event.clientX,
-                  y: event.clientY,
-                });
-              }
-            }}
-            onMouseEnter={() => {
-              if (!isMobile) {
-                setHoveredProject(project);
-              }
-            }}
-            onMouseLeave={() => setHoveredProject(null)}
-            onClick={() => handleProjectClick(project)}
           >
-            <motion.span
-              animate={{ opacity: isFaded ? 0.2 : 1 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
+            (<span>projects</span>)
+          </motion.p>
+        </motion.div>
+      )}
+
+      {/* MOBILE PROJECT LIST */}
+
+      {isMobile && (
+        <motion.div
+          className="project-list"
+          style={{
+            pointerEvents:
+              isDetail || !projectsOpen
+                ? "none"
+                : "auto",
+          }}
+          initial="closed"
+          animate={
+            projectsOpen && !isDetail
+              ? "open"
+              : "closed"
+          }
+          variants={{
+            closed: {},
+
+            open: {
+              transition: {
+                staggerChildren: 0.12,
+                delayChildren: 0.2,
+              },
+            },
+          }}
+        >
+          {projects.map((project) => (
+            <motion.div
+              className="project-item"
+              key={project.id}
+              variants={{
+                closed: {
+                  opacity: 0,
+                  y: 8,
+                  filter: "blur(10px)",
+                },
+
+                open: {
+                  opacity: 1,
+                  y: 0,
+                  filter: "blur(0px)",
+                },
+              }}
+              transition={{
+                duration: 0.9,
+                ease: "easeOut",
+              }}
+              onClick={() =>
+                handleProjectClick(project)
+              }
             >
-              {project.name}
-            </motion.span>
-          </motion.div>
-        );
-      })}
+              {project.name.toLowerCase()}
+            </motion.div>
+          ))}
+        </motion.div>
+      )}
 
-      </motion.div>
+      {/* BOTTOM LEFT TEXT */}
 
-      {/* PROJECT IMAGE PREVIEW */}
-<AnimatePresence mode="wait">
-  {projectsOpen &&
-    !isDetail &&
-    !isMobile &&
-    hoveredProject &&
-    projectImages[hoveredProject.id] && (
-      <motion.div
-        key={hoveredProject.id}
-        className="project-preview"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{
-          duration: 0.9,
-          ease: "easeInOut",
-        }}
-      >
-        {projectImages[hoveredProject.id].map((src, index) => (
-          <motion.img
-            key={src}
-            src={src}
-            alt=""
-            className={`project-preview-image preview-image-${index + 1}`}
-            initial={{
-              opacity: 0,
-              y: 22,
-              filter: "blur(8px)",
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-              filter: "blur(0px)",
-            }}
-            exit={{
-              opacity: 0,
-              y: 8,
-              filter: "blur(5px)",
-            }}
-            transition={{
-              duration: 1.3,
-              delay: index * 0.1,
-              ease: [0.22, 1, 0.36, 1],
-            }}
-          />
-        ))}
-      </motion.div>
-    )}
-</AnimatePresence>
-
-
-      {/* CUSTOM CURSOR */}
-      <AnimatePresence>
-        {!isMobile && projectsOpen && hoveredProject && (
-          <motion.div
-            className="project-cursor"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            style={{
-              left: cursorPosition.x ,
-              top: cursorPosition.y ,
-            }}
-            transition={{ opacity: { duration: 0.4, ease: "easeInOut" } }}
-          >
-            {hoveredProject.description}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-
-      {/* INTRODUCTION */}
       <motion.div
         className="intro-link"
         initial={{ opacity: 0 }}
@@ -631,27 +688,53 @@ export default function Home() {
           y: isMobileDetail ? 90 : 0,
         }}
         transition={{
-          opacity: { duration: 0.8, ease: "easeOut" },
-          y: { duration: 1, ease: moveEase },
+          opacity: {
+            duration: 0.8,
+            ease: "easeOut",
+          },
+
+          y: {
+            duration: 1,
+            ease: moveEase,
+          },
         }}
       >
-        <p>
-          <span>(+)</span> hi, i'm a web designer and developer <span>(...)</span>
-        </p>
+        {isMobile ? (
+          <p>
+            <span>(+)</span>{" "}
+            hi, i'm a web designer and developer{" "}
+            <span>(...)</span>
+          </p>
+        ) : (
+          <p>website under construction</p>
+        )}
       </motion.div>
 
-      {/* CONSTRUCTION MESSAGE */}
+      {/* BOTTOM RIGHT TEXT */}
+
       <motion.div
         className="construction"
         initial={{ opacity: 0 }}
-        animate={{ opacity: showContent ? 1 : 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        animate={{
+          opacity: showContent ? 1 : 0,
+        }}
+        transition={{
+          duration: 0.8,
+          ease: "easeOut",
+        }}
       >
-        <p>iteration 1.<span>?</span></p>
+        <p>website under construction</p>
       </motion.div>
 
-      {/* PROJECT DETAILS (child route) */}
-      <AnimatePresence onExitComplete={() => setDetailMounted(false)}>
+      {/* --------------------------------
+          PROJECT DETAILS
+      -------------------------------- */}
+
+      <AnimatePresence
+        onExitComplete={() =>
+          setDetailMounted(false)
+        }
+      >
         {isDetail && (
           <motion.div
             key="details"
@@ -659,15 +742,23 @@ export default function Home() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-            onScroll={(event) => scrollY.set(event.currentTarget.scrollTop)}
+            transition={{
+              duration: 0.4,
+              ease: "easeOut",
+            }}
+            onScroll={(event) =>
+              scrollY.set(
+                event.currentTarget.scrollTop
+              )
+            }
           >
             {outlet}
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* CLOSE BUTTON - highest z-index, above the tiles */}
+      {/* CLOSE BUTTON */}
+
       <AnimatePresence>
         {isDetail && (
           <motion.button
@@ -675,23 +766,33 @@ export default function Home() {
             type="button"
             className="detail-close"
             onClick={() => navigate("/")}
-            initial={{ opacity: 0, filter: "blur(8px)" }}
+            initial={{
+              opacity: 0,
+              filter: "blur(8px)",
+            }}
             animate={{
               opacity: 1,
               filter: "blur(0px)",
-              transition: { duration: 0.8, delay: 0.7, ease: "easeOut" },
+
+              transition: {
+                duration: 0.8,
+                delay: 0.7,
+                ease: "easeOut",
+              },
             }}
             exit={{
               opacity: 0,
               filter: "blur(8px)",
-              transition: { duration: 0.3 },
+
+              transition: {
+                duration: 0.3,
+              },
             }}
           >
             close
           </motion.button>
         )}
       </AnimatePresence>
-
     </main>
   );
 }

@@ -1,0 +1,55 @@
+
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  width: 10px;
+  height: 10px;
+
+  pointer-events: none;
+  z-index: 99999;
+
+  will-change: transform;
+
+  transition: opacity 0.25s ease-out;
+}
+
+.custom-cursor-square {
+  width: 100%;
+  height: 100%;
+
+  transform: translate(-50%, -50%);
+
+  background: radial-gradient(
+    circle,
+    #000 0%,
+    #111 55%,
+    #aaa 100%
+  );
+}
+
+/* DESKTOP DEVICES WITH A MOUSE */
+
+@media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+
+  body,
+  body * {
+    cursor: none !important;
+  }
+
+  /* Hide the square when a category label appears */
+
+  body:has(.desktop-project-item:hover) .custom-cursor {
+    opacity: 0;
+  }
+}
+
+/* MOBILE / TOUCH DEVICES */
+
+@media (max-width: 767px), (hover: none), (pointer: coarse) {
+
+  .custom-cursor {
+    display: none;
+  }
+}
