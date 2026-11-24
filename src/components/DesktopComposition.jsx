@@ -4,6 +4,7 @@ import {
   useEffect,
   useLayoutEffect,
   useRef,
+  Fragment,
 } from "react";
 
 import {
@@ -36,9 +37,11 @@ function DraggableProject({
   stageRef,
   dimensions,
   isHovered,
+  isAnimating,
   bringToFront,
   createTrailLayer,
   zIndex,
+  setHoveredImage,
 }) {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -48,6 +51,8 @@ function DraggableProject({
   const activeRef = useRef(false);
 
   const trailLayerRef = useRef(null);
+
+  const shouldMove = isHovered || isAnimating;
 
   const lastStamp = useRef({
     x: 0,
@@ -248,6 +253,28 @@ function DraggableProject({
   }, [isHovered]);
 
   /* --------------------------------
+   IMAGE ANIMATION
+-------------------------------- */
+
+useEffect(() => {
+  if (!initializedRef.current) return;
+
+  if (shouldMove) {
+    activeRef.current = true;
+
+    if (!draggingRef.current) {
+      startTrail();
+    }
+  } else if (activeRef.current) {
+    activeRef.current = false;
+
+    if (!draggingRef.current) {
+      stopTrail();
+    }
+  }
+}, [shouldMove]);
+
+  /* --------------------------------
      AUTONOMOUS MOVEMENT
   -------------------------------- */
 
@@ -259,7 +286,7 @@ function DraggableProject({
       return;
     }
 
-    if (!isHovered) return;
+    if (!shouldMove) return;
 
     const deltaTime = Math.min(delta / 1000, 0.05);
 
@@ -351,6 +378,20 @@ function DraggableProject({
   }
 
   /* --------------------------------
+     IMAGE HOVER
+  -------------------------------- */
+
+  function handleImageEnter() {
+    setHoveredImage(project.id);
+  }
+
+  function handleImageLeave() {
+    setHoveredImage((previous) =>
+      previous === project.id ? null : previous
+    );
+  }
+
+  /* --------------------------------
      RENDER IMAGE
   -------------------------------- */
 
@@ -358,6 +399,10 @@ function DraggableProject({
     <motion.div
       className="composition-image-wrapper"
       data-drag-cursor
+
+      onMouseEnter={handleImageEnter}
+      onMouseLeave={handleImageLeave}
+
       style={{
         x,
         y,
@@ -372,11 +417,6 @@ function DraggableProject({
       onDragStart={handleDragStart}
       onDrag={updateTrail}
       onDragEnd={handleDragEnd}
-    //   onHoverStart={() => {
-    //     if (!draggingRef.current && !isHovered) {
-    //       bringToFront(project.id);
-    //     }
-    //   }}
     >
       <motion.img
         className="composition-image"
@@ -384,10 +424,6 @@ function DraggableProject({
         alt={project.name}
         draggable={false}
         loading="eager"
-        // variants={{
-        //   rest: { scale: 1 },
-        //   hover: { scale: 1.5 },
-        // }}
         initial="rest"
         animate="rest"
         transition={{
@@ -400,7 +436,6 @@ function DraggableProject({
 
       <motion.div
         className="composition-hover-target"
-        // whileHover="hover"
       />
     </motion.div>
   );
@@ -413,7 +448,6 @@ function DraggableProject({
 function CompositionContent({
   showContent,
   onProjectClick,
-  onClear,
 }) {
   const stageRef = useRef(null);
 
@@ -426,8 +460,26 @@ function CompositionContent({
     )
   );
 
+  /* --------------------------------
+     HOVER STATES
+  -------------------------------- */
+
   const [hoveredProject, setHoveredProject] =
     useState(null);
+
+  const [hoveredImage, setHoveredImage] =
+    useState(null);
+
+  const highlightedProject =
+    hoveredProject ?? hoveredImage;
+
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  const [imageResetKey, setImageResetKey] = useState(0);
+
+  /* --------------------------------
+     DIMENSIONS AND Z-INDEX STATES
+  -------------------------------- */
 
   const [dimensions, setDimensions] = useState({
     width: 0,
@@ -522,6 +574,34 @@ function CompositionContent({
     compositionProjects.slice(4),
   ];
 
+  function toggleAnimation() {
+  setIsAnimating((previous) => !previous);
+  }
+
+  function clearComposition() {
+    setIsAnimating(false);
+    setHoveredProject(null);
+    setHoveredImage(null);
+
+    highestZIndex.current = Math.max(
+      20,
+      ...compositionProjects.map(
+        (project) => Number(project.zIndex) || 2
+      )
+    );
+
+    setZIndexes(
+      Object.fromEntries(
+        compositionProjects.map((project) => [
+          project.id,
+          Number(project.zIndex) || 2,
+        ])
+      )
+    );
+
+    setImageResetKey((previous) => previous + 1);
+  }
+
   return (
     <>
       <motion.div
@@ -541,6 +621,7 @@ function CompositionContent({
             : "hidden",
         }}
       >
+
         {/* BACKGROUND */}
 
         <img
@@ -600,32 +681,39 @@ function CompositionContent({
             })}
         </div>
 
-        {/* PERSISTENT TRACES */}
+        <Fragment key={imageResetKey}>
 
-        <div
-          className="composition-trails"
-          aria-hidden="true"
+  {/* PERSISTENT TRACES */}
+
+  <div
+    className="composition-trails"
+    aria-hidden="true"
+  />
+
+  {/* DRAGGABLE IMAGES */}
+
+  <div className="composition-images">
+    {dimensions.width > 0 &&
+      compositionProjects.map((project) => (
+        <DraggableProject
+          key={project.id}
+          project={project}
+          stageRef={stageRef}
+          dimensions={dimensions}
+          isHovered={
+            hoveredProject === project.id
+          }
+          isAnimating={isAnimating}
+          bringToFront={bringToFront}
+          createTrailLayer={createTrailLayer}
+          zIndex={zIndexes[project.id]}
+          setHoveredImage={setHoveredImage}
         />
+      ))}
+  </div>
 
-        {/* DRAGGABLE IMAGES */}
+</Fragment>
 
-        <div className="composition-images">
-          {dimensions.width > 0 &&
-            compositionProjects.map((project) => (
-              <DraggableProject
-                key={project.id}
-                project={project}
-                stageRef={stageRef}
-                dimensions={dimensions}
-                isHovered={
-                  hoveredProject === project.id
-                }
-                bringToFront={bringToFront}
-                createTrailLayer={createTrailLayer}
-                zIndex={zIndexes[project.id]}
-              />
-            ))}
-        </div>
       </motion.div>
 
       {/* --------------------------------
@@ -654,12 +742,10 @@ function CompositionContent({
             key={rowIndex}
           >
             {row.map((project) => {
-              const isHovered =
-                hoveredProject === project.id;
 
               const isFaded =
-                hoveredProject !== null &&
-                !isHovered;
+                highlightedProject !== null &&
+                highlightedProject !== project.id;
 
               return (
                 <div
@@ -712,28 +798,45 @@ function CompositionContent({
         ))}
       </motion.div>
 
-      {/* --------------------------------
-          CLEAR BUTTON
-      -------------------------------- */}
+    {/* --------------------------------
+    ANIMATION CONTROLS
+-------------------------------- */}
 
-      <motion.button
-        type="button"
-        className="composition-clear-button"
-        initial={{ opacity: 0 }}
-        animate={{
-          opacity: showContent ? 1 : 0,
-        }}
-        transition={{ duration: 0.8 }}
-        onClick={onClear}
-        tabIndex={showContent ? 0 : -1}
-        style={{
-          pointerEvents: showContent
-            ? "auto"
-            : "none",
-        }}
-      >
-        (clear)
-      </motion.button>
+<motion.div
+  className="composition-controls"
+  initial={{ opacity: 0 }}
+  animate={{
+    opacity: showContent ? 1 : 0,
+  }}
+  transition={{
+    duration: 0.8,
+    ease: "easeOut",
+  }}
+  style={{
+    pointerEvents: showContent ? "auto" : "none",
+  }}
+>
+  <button
+    type="button"
+    className="composition-control-button"
+    onClick={toggleAnimation}
+    tabIndex={showContent ? 0 : -1}
+    aria-pressed={isAnimating}
+  >
+    {isAnimating
+      ? "stop animation"
+      : "start animation"}
+  </button>
+
+  <button
+    type="button"
+    className="composition-control-button"
+    onClick={clearComposition}
+    tabIndex={showContent ? 0 : -1}
+  >
+    clear
+  </button>
+</motion.div>
     </>
   );
 }
@@ -746,18 +849,10 @@ export default function DesktopComposition({
   showContent,
   onProjectClick,
 }) {
-  const [resetKey, setResetKey] = useState(0);
-
-  function clearComposition() {
-    setResetKey((previous) => previous + 1);
-  }
-
   return (
     <CompositionContent
-      key={resetKey}
       showContent={showContent}
       onProjectClick={onProjectClick}
-      onClear={clearComposition}
     />
   );
 }

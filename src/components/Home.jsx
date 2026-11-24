@@ -727,7 +727,7 @@ export default function Home() {
           ease: "easeOut",
         }}
       >
-        <p>website under construction</p>
+        <p>iteration 1.?</p>
       </motion.div>
 
       {/* --------------------------------
