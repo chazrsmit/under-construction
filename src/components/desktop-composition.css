@@ -37,6 +37,38 @@
 }
 
 /* --------------------------------
+   STATIC IMAGE NUMBERS
+-------------------------------- */
+
+.composition-static-numbers {
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+  user-select: none;
+
+  z-index: 1;
+}
+
+.static-number-wrapper {
+  position: absolute;
+
+  pointer-events: none;
+}
+
+.composition-image-number {
+  position: absolute;
+
+  font-family: var(--font-title);
+  font-size: 12px;
+  font-weight: normal;
+
+  white-space: nowrap;
+
+  pointer-events: none;
+}
+
+/* --------------------------------
    TRAILS
 -------------------------------- */
 
@@ -108,6 +140,8 @@
   object-fit: cover;
   object-position: center;
 
+  transform-origin: center;
+
   image-rendering: auto;
 
   pointer-events: none;
@@ -118,38 +152,13 @@
   border: none;
   margin: 0;
   padding: 0;
+
+  scale: 1;
+  transition: scale 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* --------------------------------
-   STATIC IMAGE NUMBERS
--------------------------------- */
-
-.composition-static-numbers {
-  position: absolute;
-  inset: 0;
-
-  pointer-events: none;
-  user-select: none;
-
-  z-index: 4;
-}
-
-.static-number-wrapper {
-  position: absolute;
-
-  pointer-events: none;
-}
-
-.composition-image-number {
-  position: absolute;
-
-  font-family: var(--font-title);
-  font-size: 12px;
-  font-weight: normal;
-
-  white-space: nowrap;
-
-  pointer-events: none;
+.composition-image-wrapper:hover .composition-image {
+  scale: 1.05;
 }
 
 /* --------------------------------
@@ -215,8 +224,6 @@
   isolation: isolate;
 }
 
-/* BACKGROUND FOR LEGIBILITY */
-
 .desktop-project-button::before {
   content: "";
 
@@ -235,8 +242,6 @@
   pointer-events: none;
 }
 
-/* CONTENT OPACITY */
-
 .project-button-content {
   display: flex;
 
@@ -245,7 +250,9 @@
   gap: 3px;
 }
 
-/* TYPOGRAPHY */
+/* --------------------------------
+   TYPOGRAPHY
+-------------------------------- */
 
 .project-list-number {
   font-family: var(--font-title);
@@ -260,6 +267,50 @@
 }
 
 /* --------------------------------
+   CLEAR BUTTON
+-------------------------------- */
+
+.composition-clear-button {
+  position: absolute;
+
+  right: 18px;
+  bottom: 52px;
+
+  padding: 0;
+
+  border: none;
+  background: none;
+
+  font-family: var(--font-description);
+  font-size: 15px;
+  font-style: italic;
+
+  color: inherit;
+
+  z-index: 40;
+
+  isolation: isolate;
+}
+
+.composition-clear-button::before {
+  content: "";
+
+  position: absolute;
+
+  inset: -4px -7px;
+
+  background: #f0f0f0;
+
+  box-shadow: 0 0 6px 3px #f0f0f0;
+
+  border-radius: 3px;
+
+  z-index: -1;
+
+  pointer-events: none;
+}
+
+/* --------------------------------
    MOBILE
 -------------------------------- */
 
@@ -267,7 +318,7 @@
 
   .desktop-composition,
   .desktop-project-list,
-  .composition-static-numbers {
+  .composition-clear-button {
     display: none;
   }
 

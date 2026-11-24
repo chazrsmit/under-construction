@@ -226,7 +226,7 @@ function DraggableProject({
   }
 
   /* --------------------------------
-     HOVER START / STOP
+     PROJECT LINK HOVER
   -------------------------------- */
 
   useEffect(() => {
@@ -307,16 +307,12 @@ function DraggableProject({
         speed *
         deltaTime;
 
-    /* Horizontal boundaries */
-
     if (nextX < 0 || nextX > maxX) {
       direction.current =
         Math.PI - direction.current;
 
       targetDirection.current = direction.current;
     }
-
-    /* Vertical boundaries */
 
     if (nextY < 0 || nextY > maxY) {
       direction.current = -direction.current;
@@ -361,6 +357,7 @@ function DraggableProject({
   return (
     <motion.div
       className="composition-image-wrapper"
+      data-drag-cursor
       style={{
         x,
         y,
@@ -375,25 +372,48 @@ function DraggableProject({
       onDragStart={handleDragStart}
       onDrag={updateTrail}
       onDragEnd={handleDragEnd}
+    //   onHoverStart={() => {
+    //     if (!draggingRef.current && !isHovered) {
+    //       bringToFront(project.id);
+    //     }
+    //   }}
     >
-      <img
+      <motion.img
         className="composition-image"
         src={imagePath(project.image)}
         alt={project.name}
         draggable={false}
         loading="eager"
+        // variants={{
+        //   rest: { scale: 1 },
+        //   hover: { scale: 1.5 },
+        // }}
+        initial="rest"
+        animate="rest"
+        transition={{
+          duration: 0.4,
+          ease: [0.22, 1, 0.36, 1],
+        }}
+      />
+
+      {/* Invisible hover target */}
+
+      <motion.div
+        className="composition-hover-target"
+        // whileHover="hover"
       />
     </motion.div>
   );
 }
 
 /* --------------------------------
-   DESKTOP COMPOSITION
+   COMPOSITION CONTENT
 -------------------------------- */
 
-export default function DesktopComposition({
+function CompositionContent({
   showContent,
   onProjectClick,
+  onClear,
 }) {
   const stageRef = useRef(null);
 
@@ -497,10 +517,6 @@ export default function DesktopComposition({
     imageWidth / settings.imageAspectRatio
   );
 
-  /* --------------------------------
-     PROJECT ROWS
-  -------------------------------- */
-
   const projectRows = [
     compositionProjects.slice(0, 4),
     compositionProjects.slice(4),
@@ -508,8 +524,6 @@ export default function DesktopComposition({
 
   return (
     <>
-      {/* BACKGROUND AND IMAGES */}
-
       <motion.div
         ref={stageRef}
         className="desktop-composition"
@@ -518,7 +532,7 @@ export default function DesktopComposition({
           opacity: showContent ? 1 : 0,
         }}
         transition={{
-          duration: 1,
+          duration: 0.8,
           ease: "easeOut",
         }}
         style={{
@@ -535,6 +549,56 @@ export default function DesktopComposition({
           alt=""
           draggable={false}
         />
+
+        {/* STATIC NUMBERS */}
+
+        <div
+          className="composition-static-numbers"
+          aria-hidden="true"
+        >
+          {dimensions.width > 0 &&
+            compositionProjects.map((project) => {
+              const initialX = clamp(
+                dimensions.width *
+                  (project.position.x / 100),
+                0,
+                Math.max(
+                  0,
+                  dimensions.width - imageWidth
+                )
+              );
+
+              const initialY = clamp(
+                dimensions.height *
+                  (project.position.y / 100),
+                0,
+                Math.max(
+                  0,
+                  dimensions.height - imageHeight
+                )
+              );
+
+              return (
+                <div
+                  key={project.id}
+                  className="static-number-wrapper"
+                  style={{
+                    left: Math.round(initialX),
+                    top: Math.round(initialY),
+                    width: imageWidth,
+                    height: imageHeight,
+                  }}
+                >
+                  <span
+                    className="composition-image-number"
+                    style={project.numberPosition}
+                  >
+                    ({project.number})
+                  </span>
+                </div>
+              );
+            })}
+        </div>
 
         {/* PERSISTENT TRACES */}
 
@@ -562,66 +626,6 @@ export default function DesktopComposition({
               />
             ))}
         </div>
-      </motion.div>
-
-      {/* --------------------------------
-          STATIC IMAGE NUMBERS
-      -------------------------------- */}
-
-      <motion.div
-        className="composition-static-numbers"
-        initial={{ opacity: 0 }}
-        animate={{
-          opacity: showContent ? 1 : 0,
-        }}
-        transition={{
-          duration: 1,
-          ease: "easeOut",
-        }}
-        aria-hidden="true"
-      >
-        {dimensions.width > 0 &&
-          compositionProjects.map((project) => {
-            const initialX = clamp(
-              dimensions.width *
-                (project.position.x / 100),
-              0,
-              Math.max(
-                0,
-                dimensions.width - imageWidth
-              )
-            );
-
-            const initialY = clamp(
-              dimensions.height *
-                (project.position.y / 100),
-              0,
-              Math.max(
-                0,
-                dimensions.height - imageHeight
-              )
-            );
-
-            return (
-              <div
-                key={project.id}
-                className="static-number-wrapper"
-                style={{
-                  left: Math.round(initialX),
-                  top: Math.round(initialY),
-                  width: imageWidth,
-                  height: imageHeight,
-                }}
-              >
-                <span
-                  className="composition-image-number"
-                  style={project.numberPosition}
-                >
-                  ({project.number})
-                </span>
-              </div>
-            );
-          })}
       </motion.div>
 
       {/* --------------------------------
@@ -672,6 +676,11 @@ export default function DesktopComposition({
                     type="button"
                     className="desktop-project-button"
                     data-cursor={project.categories}
+                    data-cursor-placement={
+                      rowIndex === 0
+                        ? "top"
+                        : "bottom"
+                    }
                     onClick={() =>
                       onProjectClick(project)
                     }
@@ -702,6 +711,53 @@ export default function DesktopComposition({
           </div>
         ))}
       </motion.div>
+
+      {/* --------------------------------
+          CLEAR BUTTON
+      -------------------------------- */}
+
+      <motion.button
+        type="button"
+        className="composition-clear-button"
+        initial={{ opacity: 0 }}
+        animate={{
+          opacity: showContent ? 1 : 0,
+        }}
+        transition={{ duration: 0.8 }}
+        onClick={onClear}
+        tabIndex={showContent ? 0 : -1}
+        style={{
+          pointerEvents: showContent
+            ? "auto"
+            : "none",
+        }}
+      >
+        (clear)
+      </motion.button>
     </>
+  );
+}
+
+/* --------------------------------
+   RESETTABLE DESKTOP COMPOSITION
+-------------------------------- */
+
+export default function DesktopComposition({
+  showContent,
+  onProjectClick,
+}) {
+  const [resetKey, setResetKey] = useState(0);
+
+  function clearComposition() {
+    setResetKey((previous) => previous + 1);
+  }
+
+  return (
+    <CompositionContent
+      key={resetKey}
+      showContent={showContent}
+      onProjectClick={onProjectClick}
+      onClear={clearComposition}
+    />
   );
 }

@@ -30,3 +30,39 @@
     opacity: 0.2;
   }
 }
+/* --------------------------------
+   NAVIGATION LINK GLOW
+-------------------------------- */
+
+@media (min-width: 768px) {
+
+  .site-nav {
+    z-index: 50;
+  }
+
+  .site-nav a,
+  .site-nav button {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .site-nav a::before,
+  .site-nav button::before {
+    content: "";
+
+    position: absolute;
+
+    inset: -4px -7px;
+
+    background: #f0f0f0;
+
+    box-shadow: 0 0 6px 3px #f0f0f0;
+
+    border-radius: 3px;
+
+    z-index: -1;
+
+    pointer-events: none;
+  }
+
+}

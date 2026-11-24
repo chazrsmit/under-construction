@@ -20,7 +20,7 @@
 }
 
 /* --------------------------------
-   DEFAULT GRADIENT SQUARE
+   GRADIENT SQUARE
 -------------------------------- */
 
 .custom-cursor-square {
@@ -31,7 +31,27 @@
 
   width: 10px;
   height: 10px;
+}
 
+.cursor-gradient {
+  position: absolute;
+  inset: 0;
+}
+
+/* DEFAULT GREY GRADIENT */
+
+.cursor-gradient-grey {
+  background: radial-gradient(
+    circle,
+    #555 0%,
+    #999 50%,
+    #eee 100%
+  );
+}
+
+/* BLACK GRADIENT ON LINKS */
+
+.cursor-gradient-black {
   background: radial-gradient(
     circle,
     #000 0%,
@@ -41,52 +61,70 @@
 }
 
 /* --------------------------------
-   LABEL POSITION
+   DRAG CURSOR
+-------------------------------- */
+
+.custom-cursor-drag {
+  position: absolute;
+
+  width: 35px;
+  height: 35px;
+
+  top: -17.5px;
+  left: -17.5px;
+
+  object-fit: contain;
+
+  pointer-events: none;
+}
+
+/* --------------------------------
+   CATEGORY LABEL POSITION
 -------------------------------- */
 
 .cursor-label-wrapper {
   position: absolute;
 
-  left: 12px;
-  top: 16px;
+  left: 0;
+
+  transform: translateX(-50%);
 
   width: max-content;
 
   pointer-events: none;
 }
 
-/* FLIP HORIZONTALLY NEAR RIGHT EDGE */
+/* FIRST ROW */
 
-.cursor-label-wrapper.cursor-flip-x {
-  left: auto;
-  right: 12px;
-}
-
-/* FLIP VERTICALLY NEAR BOTTOM EDGE */
-
-.cursor-label-wrapper.cursor-flip-y {
-  top: auto;
+.cursor-label-top {
   bottom: 16px;
 }
 
+/* SECOND ROW */
+
+.cursor-label-bottom {
+  top: 16px;
+}
+
 /* --------------------------------
-   CURSOR LABEL
+   CATEGORY LABEL
 -------------------------------- */
 
 .custom-cursor-label {
   padding: 6px 10px;
-
-  max-width: 230px;
 
   border: 1px solid #aaa;
   border-radius: 30px;
 
   background: #f0f0f0;
 
+  box-shadow: 0 0 6px 3px #f0f0f0;
+
   color: #111;
 
   font-family: var(--font-description);
   font-size: 11px;
+  font-style: italic;
   font-weight: normal;
 
   line-height: 1.2;
@@ -98,7 +136,7 @@
 }
 
 /* --------------------------------
-   DESKTOP DEVICES
+   DESKTOP
 -------------------------------- */
 
 @media (min-width: 768px)
@@ -113,7 +151,7 @@
 }
 
 /* --------------------------------
-   MOBILE DEVICES
+   MOBILE
 -------------------------------- */
 
 @media (max-width: 767px),
@@ -124,4 +162,53 @@
     display: none;
   }
 
+}
+
+/* --------------------------------
+   DRAG CURSOR
+-------------------------------- */
+
+.custom-cursor-drag-text {
+  position: absolute;
+
+  top: -5px;
+  left: -5px;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  width: max-content;
+
+  pointer-events: none;
+}
+
+.drag-gradient-square {
+  width: 10px;
+  height: 10px;
+
+  background: radial-gradient(
+    circle,
+    #000 0%,
+    #111 55%,
+    #aaa 100%
+  );
+}
+
+.drag-label {
+  font-family: var(--font-main);
+  font-size: 13px;
+  font-style: italic;
+
+  color: #111;
+
+  background: #f0f0f0;
+  box-shadow: 0 0 6px 3px #f0f0f0;
+
+  border-radius: 3px;
+  padding-left: 3px;
+  padding-right: 3px;
+
+  line-height: 1;
+  white-space: nowrap;
 }

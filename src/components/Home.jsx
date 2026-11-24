@@ -146,6 +146,30 @@ export default function Home() {
 
   const projectsData = getProjects(isMobile);
 
+  const [titleDocked, setTitleDocked] = useState(false);
+
+  useEffect(() => {
+  let timeout;
+  let cancelled = false;
+
+  async function startTitleAnimation() {
+    await document.fonts.ready;
+
+    if (cancelled) return;
+
+    timeout = setTimeout(() => {
+      setTitleDocked(true);
+    }, 2000);
+  }
+
+  startTitleAnimation();
+
+  return () => {
+    cancelled = true;
+    clearTimeout(timeout);
+  };
+}, []);
+
   /* --------------------------------
      DETAILS ROUTING
   -------------------------------- */
@@ -281,65 +305,41 @@ export default function Home() {
       {/* TITLE */}
 
       <motion.div
-        className="site-title"
-        initial={{
-          opacity: 0,
-          top: "50%",
-          left: isMobile ? "18px" : "50%",
-          x: isMobile ? 0 : "-50%",
-          y: "-50%",
-          fontSize: isMobile ? "22px" : "28px",
-        }}
-        animate={{
-          opacity: 1,
-          top: "20px",
-          left: "18px",
-          x: 0,
-          y: isMobileDetail ? -100 : 0,
-          fontSize: "16px",
-        }}
-        transition={{
-          opacity: {
-            duration: 0.8,
-            ease: "easeOut",
-          },
-
-          top: {
-            duration: 1.2,
-            delay: showContent ? 0 : 2,
-            ease: moveEase,
-          },
-
-          left: {
-            duration: 1.2,
-            delay: showContent ? 0 : 2,
-            ease: moveEase,
-          },
-
-          x: {
-            duration: 1.2,
-            delay: showContent ? 0 : 2,
-            ease: moveEase,
-          },
-
-          y: {
-            duration: 1.2,
-            delay: showContent ? 0 : 2,
-            ease: moveEase,
-          },
-
-          fontSize: {
-            duration: 1.2,
-            delay: showContent ? 0 : 2,
-            ease: moveEase,
-          },
-        }}
-        onAnimationComplete={() =>
-          setShowContent(true)
-        }
-      >
-        <h1>Charlotte Smit</h1>
-      </motion.div>
+  layout
+  className={`site-title ${
+    titleDocked
+      ? "site-title-docked"
+      : "site-title-centered"
+  }`}
+  initial={{
+    opacity: 0,
+  }}
+  animate={{
+    opacity: 1,
+    y: isMobileDetail ? -100 : 0,
+  }}
+  transition={{
+    opacity: {
+      duration: 0.8,
+      ease: "easeOut",
+    },
+    layout: {
+      duration: 1.2,
+      ease: [0.22, 1, 0.36, 1],
+    },
+    y: {
+      duration: 1.2,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  }}
+  onLayoutAnimationComplete={() => {
+    if (titleDocked) {
+      setShowContent(true);
+    }
+  }}
+>
+  <h1>Charlotte Smit</h1>
+</motion.div>
 
       {/* NAVIGATION */}
 

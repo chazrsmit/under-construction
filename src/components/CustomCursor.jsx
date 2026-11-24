@@ -14,22 +14,37 @@ export default function CustomCursor() {
   const y = useMotionValue(-100);
 
   const [visible, setVisible] = useState(false);
-
   const [cursorText, setCursorText] = useState(null);
-
-  const [flipX, setFlipX] = useState(false);
-  const [flipY, setFlipY] = useState(false);
+  const [cursorType, setCursorType] = useState("default");
+  const [placement, setPlacement] = useState("bottom");
 
   useEffect(() => {
-    function updateCursorText(target) {
-      const element =
-        target instanceof Element
-          ? target.closest("[data-cursor]")
-          : null;
+    function updateCursor(target) {
+      if (!(target instanceof Element)) return;
 
-      setCursorText(
-        element?.getAttribute("data-cursor") || null
-      );
+      const category = target.closest("[data-cursor]");
+      const draggable = target.closest("[data-drag-cursor]");
+      const link = target.closest("a, button, [data-link-cursor]");
+
+      if (category) {
+        setCursorText(category.getAttribute("data-cursor"));
+
+        setPlacement(
+          category.getAttribute("data-cursor-placement") ||
+            "bottom"
+        );
+
+        setCursorType("category");
+      } else if (draggable) {
+        setCursorText(null);
+        setCursorType("drag");
+      } else if (link) {
+        setCursorText(null);
+        setCursorType("link");
+      } else {
+        setCursorText(null);
+        setCursorType("default");
+      }
     }
 
     function handlePointerMove(event) {
@@ -43,26 +58,17 @@ export default function CustomCursor() {
 
       setVisible(true);
 
-      updateCursorText(event.target);
-
-      // Keep the label inside the viewport.
-
-      setFlipX(
-        event.clientX > window.innerWidth - 250
-      );
-
-      setFlipY(
-        event.clientY > window.innerHeight - 65
-      );
+      updateCursor(event.target);
     }
 
     function handlePointerOver(event) {
-      updateCursorText(event.target);
+      updateCursor(event.target);
     }
 
     function handlePointerLeave() {
       setVisible(false);
       setCursorText(null);
+      setCursorType("default");
     }
 
     window.addEventListener(
@@ -108,6 +114,10 @@ export default function CustomCursor() {
     };
   }, [x, y]);
 
+  const showSquare =
+    cursorType === "default" ||
+    cursorType === "link";
+
   return (
     <motion.div
       className="custom-cursor"
@@ -117,35 +127,71 @@ export default function CustomCursor() {
       animate={{
         opacity: visible ? 1 : 0,
       }}
-      transition={{
-        duration: 0.15,
-      }}
+      transition={{ duration: 0.15 }}
     >
-      {/* DEFAULT GRADIENT SQUARE */}
+      {/* GRADIENT SQUARE */}
 
       <motion.div
         className="custom-cursor-square"
         initial={false}
         animate={{
-          opacity: cursorText ? 0 : 1,
-          scale: cursorText ? 0.5 : 1,
+          opacity: showSquare ? 1 : 0,
+          scale: showSquare ? 1 : 0.5,
         }}
         transition={{
-          duration: 0.15,
-          ease: "easeOut",
+          duration: 0.2,
+          ease: "easeInOut",
         }}
-      />
+      >
+        {/* GREY GRADIENT */}
 
-      {/* CONTEXTUAL CURSOR LABEL */}
+        <motion.div
+          className="cursor-gradient cursor-gradient-grey"
+          animate={{
+            opacity: cursorType === "link" ? 0 : 1,
+          }}
+          transition={{ duration: 0.3 }}
+        />
+
+        {/* BLACK GRADIENT */}
+
+        <motion.div
+          className="cursor-gradient cursor-gradient-black"
+          animate={{
+            opacity: cursorType === "link" ? 1 : 0,
+          }}
+          transition={{ duration: 0.3 }}
+        />
+      </motion.div>
+
+      {/* DRAG ICON */}
+
+{/* DRAG CURSOR */}
+
+<AnimatePresence>
+  {cursorType === "drag" && (
+    <motion.div
+      className="custom-cursor-drag-text"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{
+        duration: 0.25,
+        ease: "easeInOut",
+      }}
+    >
+      <span className="drag-gradient-square" />
+      <span className="drag-label">drag</span>
+    </motion.div>
+  )}
+</AnimatePresence>
+      {/* PROJECT CATEGORY LABEL */}
 
       <div
-        className={`cursor-label-wrapper
-          ${flipX ? "cursor-flip-x" : ""}
-          ${flipY ? "cursor-flip-y" : ""}
-        `}
+        className={`cursor-label-wrapper cursor-label-${placement}`}
       >
         <AnimatePresence>
-          {cursorText && (
+          {cursorType === "category" && cursorText && (
             <motion.div
               className="custom-cursor-label"
               key={cursorText}
@@ -162,7 +208,7 @@ export default function CustomCursor() {
                 scale: 0.95,
               }}
               transition={{
-                duration: 0.15,
+                duration: 0.2,
                 ease: "easeOut",
               }}
             >
