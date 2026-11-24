@@ -4,25 +4,68 @@ import {
   motion,
   AnimatePresence,
   useMotionValue,
+  useSpring,
+  useTransform,
 } from "framer-motion";
 
 import "./custom-cursor.css";
 
 export default function CustomCursor() {
+
+  /* --------------------------------
+     MOUSE POSITION
+  -------------------------------- */
+
   const x = useMotionValue(-100);
   const y = useMotionValue(-100);
+
+  /* --------------------------------
+     SPRING CONFIGURATION
+  -------------------------------- */
+
+  const springX = useSpring(x, {
+    stiffness: 180,
+    damping: 14,
+    mass: 0.8,
+  });
+
+  const springY = useSpring(y, {
+    stiffness: 180,
+    damping: 14,
+    mass: 0.8,
+  });
+
+  const labelX = useTransform(
+    [springX, x],
+    ([smooth, raw]) => smooth - raw
+  );
+
+  const labelY = useTransform(
+    [springY, y],
+    ([smooth, raw]) => smooth - raw
+  );
+
+  /* --------------------------------
+     CURSOR STATE
+  -------------------------------- */
 
   const [visible, setVisible] = useState(false);
   const [cursorText, setCursorText] = useState("");
   const [cursorType, setCursorType] = useState("default");
   const [placement, setPlacement] = useState("bottom");
 
+  /* --------------------------------
+     POINTER EVENTS
+  -------------------------------- */
+
   useEffect(() => {
     function updateCursor(target) {
       if (!(target instanceof Element)) return;
 
       const category = target.closest("[data-cursor]");
+
       const draggable = target.closest("[data-drag-cursor]");
+
       const link = target.closest(
         "a, button, [data-link-cursor]"
       );
@@ -38,10 +81,13 @@ export default function CustomCursor() {
         );
 
         setCursorType("category");
+
       } else if (draggable) {
         setCursorType("drag");
+
       } else if (link) {
         setCursorType("link");
+
       } else {
         setCursorType("default");
       }
@@ -103,6 +149,10 @@ export default function CustomCursor() {
     cursorType === "default" ||
     cursorType === "link";
 
+  /* --------------------------------
+     RENDER
+  -------------------------------- */
+
   return (
     <motion.div
       className="custom-cursor"
@@ -114,6 +164,7 @@ export default function CustomCursor() {
       }}
       transition={{ duration: 0.15 }}
     >
+
       {/* GRADIENT SQUARE */}
 
       <motion.div
@@ -128,6 +179,7 @@ export default function CustomCursor() {
           ease: "easeInOut",
         }}
       >
+
         {/* GREY GRADIENT */}
 
         <motion.div
@@ -147,6 +199,7 @@ export default function CustomCursor() {
           }}
           transition={{ duration: 0.3 }}
         />
+
       </motion.div>
 
       {/* DRAG CURSOR */}
@@ -171,8 +224,12 @@ export default function CustomCursor() {
 
       {/* PROJECT CATEGORY LABEL */}
 
-      <div
+      <motion.div
         className={`cursor-label-wrapper cursor-label-${placement}`}
+        style={{
+          x: labelX,
+          y: labelY,
+        }}
       >
         <motion.div
           className="custom-cursor-label"
@@ -190,7 +247,8 @@ export default function CustomCursor() {
         >
           {cursorText}
         </motion.div>
-      </div>
+      </motion.div>
+
     </motion.div>
   );
 }
