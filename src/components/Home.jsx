@@ -12,13 +12,82 @@ import "./home.css";
 import "./site-nav.css";
 
 const projects = [
-  { id: "agendive", name: "agendive", description: "(app & website project)" },
-  { id: "litteria", name: "litteria", description: "(e-commerce website)" },
-  { id: "oh-word", name: "oh word", description: "(web application)" },
-  { id: "la-coeh", name: "la coeh", description: "(website & identity)" },
-  { id: "attuned", name: "attuned", description: "(visual identity & website)" },
-  { id: "napolinapoli", name: "napolinapoli", description: "(digital project)" },
+  {
+    id: "a-day-in-brussels",
+    name: "a day in brussels",
+    description: "(photography & digital project)",
+  },
+  {
+    id: "agendive",
+    name: "agendive",
+    description: "(app & website project)",
+  },
+  {
+    id: "attuned",
+    name: "attuned",
+    description: "(visual identity & website)",
+  },
+  {
+    id: "la-coeh",
+    name: "la coeh",
+    description: "(website & identity)",
+  },
+  {
+    id: "litteria",
+    name: "litteria",
+    description: "(e-commerce website)",
+  },
+  {
+    id: "napolinapoli",
+    name: "napolinapoli",
+    description: "(digital project)",
+  },
+  {
+    id: "oh-word",
+    name: "oh word",
+    description: "(web application)",
+  },
 ];
+
+const imagePath = (filename) =>
+  `${import.meta.env.BASE_URL}images/${filename}`;
+
+const projectImages = {
+  "a-day-in-brussels": [
+    imagePath("aday1.png"),
+    imagePath("aday3.png"),
+  ],
+
+  agendive: Array.from(
+    { length: 7 },
+    (_, index) => imagePath(`agendive${index + 1}.png`)
+  ),
+
+  attuned: Array.from(
+    { length: 7 },
+    (_, index) => imagePath(`attuned${index + 1}.png`)
+  ),
+
+  "la-coeh": Array.from(
+    { length: 7 },
+    (_, index) => imagePath(`la-coeh${index + 1}.png`)
+  ),
+
+  litteria: Array.from(
+    { length: 7 },
+    (_, index) => imagePath(`litteria${index + 1}.png`)
+  ),
+
+  napolinapoli: Array.from(
+    { length: 7 },
+    (_, index) => imagePath(`napolinapoli${index + 1}.png`)
+  ),
+
+  "oh-word": Array.from(
+    { length: 7 },
+    (_, index) => imagePath(`oh-word${index + 1}.png`)
+  ),
+};
 
 // Mobile tiles per row.
 // false = option 1: rows of 3 on load, tiles 4-6 grow in when projects open.
@@ -481,6 +550,56 @@ export default function Home() {
       })}
 
       </motion.div>
+
+      {/* PROJECT IMAGE PREVIEW */}
+<AnimatePresence mode="wait">
+  {projectsOpen &&
+    !isDetail &&
+    !isMobile &&
+    hoveredProject &&
+    projectImages[hoveredProject.id] && (
+      <motion.div
+        key={hoveredProject.id}
+        className="project-preview"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{
+          duration: 0.9,
+          ease: "easeInOut",
+        }}
+      >
+        {projectImages[hoveredProject.id].map((src, index) => (
+          <motion.img
+            key={src}
+            src={src}
+            alt=""
+            className={`project-preview-image preview-image-${index + 1}`}
+            initial={{
+              opacity: 0,
+              y: 22,
+              filter: "blur(8px)",
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              filter: "blur(0px)",
+            }}
+            exit={{
+              opacity: 0,
+              y: 8,
+              filter: "blur(5px)",
+            }}
+            transition={{
+              duration: 1.3,
+              delay: index * 0.1,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+          />
+        ))}
+      </motion.div>
+    )}
+</AnimatePresence>
 
 
       {/* CUSTOM CURSOR */}

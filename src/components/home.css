@@ -386,3 +386,91 @@ body {
   }
 
 }
+
+
+/* --------------------------------
+   PROJECT IMAGE PREVIEW
+-------------------------------- */
+
+.project-preview {
+  position: absolute;
+  top: calc(50% + 105px);
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: min(820px, 82vw);
+  height: 220px;
+
+  z-index: 8;
+  pointer-events: none;
+}
+
+.project-preview-image {
+  position: absolute;
+  display: block;
+
+  width: auto;
+  height: auto;
+  max-width: 32%;
+  max-height: 160px;
+
+  object-fit: contain;
+  will-change: opacity, transform, filter;
+}
+
+/* Individual image positions */
+
+.preview-image-1 {
+  left: 0%;
+  top: 10px;
+  width: 18%;
+  z-index: 2;
+}
+
+.preview-image-2 {
+  left: 12%;
+  top: 0;
+  width: 23%;
+  z-index: 3;
+}
+
+.preview-image-3 {
+  left: 27%;
+  top: 24px;
+  width: 17%;
+  z-index: 4;
+}
+
+.preview-image-4 {
+  left: 39%;
+  top: 8px;
+  width: 24%;
+  z-index: 5;
+}
+
+.preview-image-5 {
+  left: 54%;
+  top: 35px;
+  width: 19%;
+  z-index: 4;
+}
+
+.preview-image-6 {
+  left: 68%;
+  top: 12px;
+  width: 22%;
+  z-index: 3;
+}
+
+.preview-image-7 {
+  left: 83%;
+  top: 30px;
+  width: 17%;
+  z-index: 2;
+}
+
+@media (max-width: 767px) {
+  .project-preview {
+    display: none;
+  }
+}
