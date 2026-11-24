@@ -1,25 +1,36 @@
 
+/* --------------------------------
+   GLOBAL CURSOR
+-------------------------------- */
+
 .custom-cursor {
   position: fixed;
+
   top: 0;
   left: 0;
 
-  width: 10px;
-  height: 10px;
+  width: 0;
+  height: 0;
 
   pointer-events: none;
+
   z-index: 99999;
 
   will-change: transform;
-
-  transition: opacity 0.25s ease-out;
 }
 
-.custom-cursor-square {
-  width: 100%;
-  height: 100%;
+/* --------------------------------
+   DEFAULT GRADIENT SQUARE
+-------------------------------- */
 
-  transform: translate(-50%, -50%);
+.custom-cursor-square {
+  position: absolute;
+
+  top: -5px;
+  left: -5px;
+
+  width: 10px;
+  height: 10px;
 
   background: radial-gradient(
     circle,
@@ -29,27 +40,88 @@
   );
 }
 
-/* DESKTOP DEVICES WITH A MOUSE */
+/* --------------------------------
+   LABEL POSITION
+-------------------------------- */
 
-@media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+.cursor-label-wrapper {
+  position: absolute;
+
+  left: 12px;
+  top: 16px;
+
+  width: max-content;
+
+  pointer-events: none;
+}
+
+/* FLIP HORIZONTALLY NEAR RIGHT EDGE */
+
+.cursor-label-wrapper.cursor-flip-x {
+  left: auto;
+  right: 12px;
+}
+
+/* FLIP VERTICALLY NEAR BOTTOM EDGE */
+
+.cursor-label-wrapper.cursor-flip-y {
+  top: auto;
+  bottom: 16px;
+}
+
+/* --------------------------------
+   CURSOR LABEL
+-------------------------------- */
+
+.custom-cursor-label {
+  padding: 6px 10px;
+
+  max-width: 230px;
+
+  border: 1px solid #aaa;
+  border-radius: 30px;
+
+  background: #f0f0f0;
+
+  color: #111;
+
+  font-family: var(--font-description);
+  font-size: 11px;
+  font-weight: normal;
+
+  line-height: 1.2;
+
+  white-space: nowrap;
+
+  pointer-events: none;
+  user-select: none;
+}
+
+/* --------------------------------
+   DESKTOP DEVICES
+-------------------------------- */
+
+@media (min-width: 768px)
+  and (hover: hover)
+  and (pointer: fine) {
 
   body,
   body * {
     cursor: none !important;
   }
 
-  /* Hide the square when a category label appears */
-
-  body:has(.desktop-project-item:hover) .custom-cursor {
-    opacity: 0;
-  }
 }
 
-/* MOBILE / TOUCH DEVICES */
+/* --------------------------------
+   MOBILE DEVICES
+-------------------------------- */
 
-@media (max-width: 767px), (hover: none), (pointer: coarse) {
+@media (max-width: 767px),
+  (hover: none),
+  (pointer: coarse) {
 
   .custom-cursor {
     display: none;
   }
+
 }

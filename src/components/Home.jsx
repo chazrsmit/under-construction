@@ -1,6 +1,8 @@
 
 import { useState, useEffect, useMemo } from "react";
 
+import AnimatedTitle from "./AnimatedTitle";
+
 import {
   motion,
   AnimatePresence,
@@ -273,6 +275,8 @@ export default function Home() {
       {/* GLOBAL CUSTOM CURSOR */}
 
       <CustomCursor />
+      {/* Animated HTML title */}
+      <AnimatedTitle /> 
 
       {/* TITLE */}
 

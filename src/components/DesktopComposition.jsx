@@ -28,7 +28,7 @@ const clamp = (value, min, max) =>
   Math.min(Math.max(value, min), max);
 
 /* --------------------------------
-   INDIVIDUAL PROJECT IMAGE
+   INDIVIDUAL DRAGGABLE IMAGE
 -------------------------------- */
 
 function DraggableProject({
@@ -42,8 +42,6 @@ function DraggableProject({
 }) {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-
-  const [isDragging, setIsDragging] = useState(false);
 
   const draggingRef = useRef(false);
   const initializedRef = useRef(false);
@@ -126,7 +124,7 @@ function DraggableProject({
   ]);
 
   /* --------------------------------
-     CREATE AN IMAGE TRACE
+     CREATE IMAGE TRACE
   -------------------------------- */
 
   function stampAt(stampX, stampY) {
@@ -137,9 +135,7 @@ function DraggableProject({
     const trace = document.createElement("img");
 
     trace.src = imagePath(project.image);
-
     trace.className = "composition-trace";
-
     trace.alt = "";
     trace.draggable = false;
 
@@ -153,7 +149,7 @@ function DraggableProject({
   }
 
   /* --------------------------------
-     START A NEW TRAIL LAYER
+     START TRAIL
   -------------------------------- */
 
   function startTrail() {
@@ -168,8 +164,6 @@ function DraggableProject({
       x: x.get(),
       y: y.get(),
     };
-
-    // Preserve the image's starting position.
 
     stampAt(x.get(), y.get());
   }
@@ -201,9 +195,6 @@ function DraggableProject({
     if (distance < spacing) return;
 
     const steps = Math.floor(distance / spacing);
-
-    // Draw equally spaced copies between
-    // the previous stamp and the current position.
 
     for (let i = 1; i <= steps; i++) {
       const ratio = (i * spacing) / distance;
@@ -263,9 +254,6 @@ function DraggableProject({
   useAnimationFrame((time, delta) => {
     if (!initializedRef.current) return;
 
-    // Dragging and autonomous movement
-    // share the same trail system.
-
     if (draggingRef.current) {
       updateTrail();
       return;
@@ -277,8 +265,6 @@ function DraggableProject({
 
     directionTimer.current += delta;
 
-    /* Random direction changes */
-
     if (
       directionTimer.current >=
       settings.directionChangeInterval
@@ -288,8 +274,6 @@ function DraggableProject({
 
       directionTimer.current = 0;
     }
-
-    /* Smooth direction changes */
 
     const difference = Math.atan2(
       Math.sin(
@@ -340,24 +324,18 @@ function DraggableProject({
       targetDirection.current = direction.current;
     }
 
-    /* Update the original image */
-
     x.set(clamp(nextX, 0, maxX));
     y.set(clamp(nextY, 0, maxY));
-
-    /* Leave traces behind */
 
     updateTrail();
   });
 
   /* --------------------------------
-     FRAMER MOTION DRAGGING
+     DRAGGING
   -------------------------------- */
 
   function handleDragStart() {
     draggingRef.current = true;
-
-    setIsDragging(true);
 
     if (trailLayerRef.current) {
       stopTrail();
@@ -371,14 +349,10 @@ function DraggableProject({
 
     draggingRef.current = false;
 
-    setIsDragging(false);
-
     if (!activeRef.current) {
       stopTrail();
     }
   }
-
-  const isMoving = isHovered || isDragging;
 
   /* --------------------------------
      RENDER IMAGE
@@ -409,21 +383,6 @@ function DraggableProject({
         draggable={false}
         loading="eager"
       />
-
-      <motion.span
-        className="composition-image-number"
-        style={project.numberPosition}
-        initial={false}
-        animate={{
-          opacity: isMoving ? 0 : 1,
-        }}
-        transition={{
-          duration: 0.3,
-          ease: "easeOut",
-        }}
-      >
-        ({project.number})
-      </motion.span>
     </motion.div>
   );
 }
@@ -509,16 +468,14 @@ export default function DesktopComposition({
   }
 
   /* --------------------------------
-     CREATE A NEW TRAIL LAYER
+     CREATE TRAIL LAYER
   -------------------------------- */
 
   function createTrailLayer(projectId, zIndex) {
     const layer = document.createElement("div");
 
     layer.className = "composition-trail-layer";
-
     layer.dataset.project = projectId;
-
     layer.style.zIndex = zIndex;
 
     stageRef.current
@@ -527,6 +484,18 @@ export default function DesktopComposition({
 
     return layer;
   }
+
+  /* --------------------------------
+     STATIC NUMBER DIMENSIONS
+  -------------------------------- */
+
+  const imageWidth = Math.round(
+    dimensions.width * (settings.imageWidth / 100)
+  );
+
+  const imageHeight = Math.round(
+    imageWidth / settings.imageAspectRatio
+  );
 
   /* --------------------------------
      PROJECT ROWS
@@ -539,9 +508,7 @@ export default function DesktopComposition({
 
   return (
     <>
-      {/* --------------------------------
-          BACKGROUND AND IMAGES
-      -------------------------------- */}
+      {/* BACKGROUND AND IMAGES */}
 
       <motion.div
         ref={stageRef}
@@ -560,7 +527,7 @@ export default function DesktopComposition({
             : "hidden",
         }}
       >
-        {/* BACKGROUND SVG */}
+        {/* BACKGROUND */}
 
         <img
           className="composition-background"
@@ -569,14 +536,14 @@ export default function DesktopComposition({
           draggable={false}
         />
 
-        {/* PERSISTENT IMAGE TRACES */}
+        {/* PERSISTENT TRACES */}
 
         <div
           className="composition-trails"
           aria-hidden="true"
         />
 
-        {/* DRAGGABLE PROJECT IMAGES */}
+        {/* DRAGGABLE IMAGES */}
 
         <div className="composition-images">
           {dimensions.width > 0 &&
@@ -595,6 +562,66 @@ export default function DesktopComposition({
               />
             ))}
         </div>
+      </motion.div>
+
+      {/* --------------------------------
+          STATIC IMAGE NUMBERS
+      -------------------------------- */}
+
+      <motion.div
+        className="composition-static-numbers"
+        initial={{ opacity: 0 }}
+        animate={{
+          opacity: showContent ? 1 : 0,
+        }}
+        transition={{
+          duration: 1,
+          ease: "easeOut",
+        }}
+        aria-hidden="true"
+      >
+        {dimensions.width > 0 &&
+          compositionProjects.map((project) => {
+            const initialX = clamp(
+              dimensions.width *
+                (project.position.x / 100),
+              0,
+              Math.max(
+                0,
+                dimensions.width - imageWidth
+              )
+            );
+
+            const initialY = clamp(
+              dimensions.height *
+                (project.position.y / 100),
+              0,
+              Math.max(
+                0,
+                dimensions.height - imageHeight
+              )
+            );
+
+            return (
+              <div
+                key={project.id}
+                className="static-number-wrapper"
+                style={{
+                  left: Math.round(initialX),
+                  top: Math.round(initialY),
+                  width: imageWidth,
+                  height: imageHeight,
+                }}
+              >
+                <span
+                  className="composition-image-number"
+                  style={project.numberPosition}
+                >
+                  ({project.number})
+                </span>
+              </div>
+            );
+          })}
       </motion.div>
 
       {/* --------------------------------
@@ -631,16 +658,9 @@ export default function DesktopComposition({
                 !isHovered;
 
               return (
-                <motion.div
+                <div
                   key={project.id}
                   className="desktop-project-item"
-                  animate={{
-                    opacity: isFaded ? 0.2 : 1,
-                  }}
-                  transition={{
-                    duration: 0.45,
-                    ease: "easeOut",
-                  }}
                   onMouseEnter={() =>
                     setHoveredProject(project.id)
                   }
@@ -648,47 +668,35 @@ export default function DesktopComposition({
                     setHoveredProject(null)
                   }
                 >
-                  {/* CATEGORY LABEL */}
-
-                  <motion.div
-                    className="project-category"
-                    initial={false}
-                    animate={{
-                      opacity: isHovered ? 1 : 0,
-
-                      y: isHovered
-                        ? 0
-                        : rowIndex === 0
-                          ? 5
-                          : -5,
-                    }}
-                    transition={{
-                      duration: 0.3,
-                      ease: "easeOut",
-                    }}
-                  >
-                    {project.categories}
-                  </motion.div>
-
-                  {/* PROJECT NAME */}
-
                   <button
                     type="button"
                     className="desktop-project-button"
+                    data-cursor={project.categories}
                     onClick={() =>
                       onProjectClick(project)
                     }
                     tabIndex={showContent ? 0 : -1}
                   >
-                    <span className="project-list-number">
-                      ({project.number})
-                    </span>
+                    <motion.span
+                      className="project-button-content"
+                      animate={{
+                        opacity: isFaded ? 0.2 : 1,
+                      }}
+                      transition={{
+                        duration: 0.45,
+                        ease: "easeOut",
+                      }}
+                    >
+                      <span className="project-list-number">
+                        ({project.number})
+                      </span>
 
-                    <span className="project-list-name">
-                      {project.name}
-                    </span>
+                      <span className="project-list-name">
+                        {project.name}
+                      </span>
+                    </motion.span>
                   </button>
-                </motion.div>
+                </div>
               );
             })}
           </div>

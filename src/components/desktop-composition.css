@@ -10,7 +10,6 @@
   overflow: hidden;
 
   z-index: 3;
-
   isolation: isolate;
 
   user-select: none;
@@ -38,7 +37,7 @@
 }
 
 /* --------------------------------
-   TRAILS CONTAINER
+   TRAILS
 -------------------------------- */
 
 .composition-trails {
@@ -46,18 +45,7 @@
   inset: 0;
 
   pointer-events: none;
-
-  /*
-    No z-index here.
-
-    The traces and original images must
-    share the same stacking context.
-  */
 }
-
-/* --------------------------------
-   INDIVIDUAL TRAIL LAYERS
--------------------------------- */
 
 .composition-trail-layer {
   position: absolute;
@@ -65,10 +53,6 @@
 
   pointer-events: none;
 }
-
-/* --------------------------------
-   INDIVIDUAL IMAGE TRACES
--------------------------------- */
 
 .composition-trace {
   position: absolute;
@@ -101,13 +85,6 @@
   inset: 0;
 
   pointer-events: none;
-
-  /*
-    No z-index here either.
-
-    This allows original images and traces
-    to overlap in chronological order.
-  */
 }
 
 .composition-image-wrapper {
@@ -144,8 +121,24 @@
 }
 
 /* --------------------------------
-   IMAGE NUMBERS
+   STATIC IMAGE NUMBERS
 -------------------------------- */
+
+.composition-static-numbers {
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+  user-select: none;
+
+  z-index: 4;
+}
+
+.static-number-wrapper {
+  position: absolute;
+
+  pointer-events: none;
+}
 
 .composition-image-number {
   position: absolute;
@@ -200,11 +193,15 @@
   user-select: none;
 }
 
+/* --------------------------------
+   PROJECT BUTTON
+-------------------------------- */
+
 .desktop-project-button {
+  position: relative;
+
   display: flex;
   align-items: baseline;
-
-  gap: 3px;
 
   padding: 0;
   margin: 0;
@@ -214,7 +211,41 @@
 
   color: inherit;
   font: inherit;
+
+  isolation: isolate;
 }
+
+/* BACKGROUND FOR LEGIBILITY */
+
+.desktop-project-button::before {
+  content: "";
+
+  position: absolute;
+
+  inset: -4px -7px;
+
+  background: #f0f0f0;
+
+  box-shadow: 0 0 6px 3px #f0f0f0;
+
+  border-radius: 3px;
+
+  z-index: -1;
+
+  pointer-events: none;
+}
+
+/* CONTENT OPACITY */
+
+.project-button-content {
+  display: flex;
+
+  align-items: baseline;
+
+  gap: 3px;
+}
+
+/* TYPOGRAPHY */
 
 .project-list-number {
   font-family: var(--font-title);
@@ -229,52 +260,14 @@
 }
 
 /* --------------------------------
-   PROJECT CATEGORIES
--------------------------------- */
-
-.project-category {
-  position: absolute;
-
-  left: 50%;
-  translate: -50% 0;
-
-  padding: 6px 9px;
-
-  border: 1px solid #aaa;
-  border-radius: 30px;
-
-  background: #f5f5f5;
-
-  font-family: Arial, sans-serif;
-  font-size: 9px;
-  font-weight: 400;
-  font-style: italic;
-
-  white-space: nowrap;
-
-  pointer-events: none;
-}
-
-/* FIRST ROW */
-
-.row-1 .project-category {
-  bottom: calc(100% + 12px);
-}
-
-/* SECOND ROW */
-
-.row-2 .project-category {
-  top: calc(100% + 12px);
-}
-
-/* --------------------------------
    MOBILE
 -------------------------------- */
 
 @media (max-width: 767px) {
 
   .desktop-composition,
-  .desktop-project-list {
+  .desktop-project-list,
+  .composition-static-numbers {
     display: none;
   }
 
