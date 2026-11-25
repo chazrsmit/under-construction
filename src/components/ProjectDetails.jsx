@@ -283,6 +283,59 @@ export default function ProjectDetails() {
 
   const project = projects.find((p) => p.id === id);
 
+useEffect(() => {
+  if (isMobile) return;
+
+  const upper = document.querySelector(".detail-gradient-column");
+  const lower = document.querySelector(".gradient-squares-bottom");
+  const preview = document.querySelector(".detail-preview-link");
+
+  const body = document.querySelector(".detail-left .detail-body");
+  const gallery = document.querySelector(".detail-images");
+  const metadata = document.querySelector(".detail-project-metadata");
+  const leftColumn = document.querySelector(".detail-left");
+
+  function updatePosition() {
+
+    // Centre the preview link between the gradient groups
+    if (upper && lower && preview) {
+      const upperBottom = upper.getBoundingClientRect().bottom;
+      const lowerTop = lower.getBoundingClientRect().top;
+
+      const middle = (upperBottom + lowerTop) / 2;
+
+      preview.style.top = `${middle}px`;
+    }
+
+    // Align the video with the description
+    if (body && gallery) {
+      const bodyTop = body.getBoundingClientRect().top;
+
+      gallery.style.paddingTop = `${bodyTop}px`;
+    }
+  }
+
+  updatePosition();
+
+  const observer = new ResizeObserver(updatePosition);
+
+  if (upper) observer.observe(upper);
+  if (lower) observer.observe(lower);
+  if (leftColumn) observer.observe(leftColumn);
+  if (body) observer.observe(body);
+  if (metadata) observer.observe(metadata);
+
+  window.addEventListener("resize", updatePosition);
+
+  document.fonts.ready.then(updatePosition);
+
+  return () => {
+    observer.disconnect();
+    window.removeEventListener("resize", updatePosition);
+  };
+
+}, [id, isMobile]);
+
   if (!project) {
     return <Navigate to="/" replace />;
   }

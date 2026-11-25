@@ -402,21 +402,19 @@
   /* --------------------------------
      PREVIEW LINK
   -------------------------------- */
+.detail-preview-link {
+  position: fixed;
 
-  .detail-preview-link {
-    position: fixed;
+  left: 20px;
 
-    top: 420px;
-    left: 20px;
+  margin: 0;
 
-    margin: 0;
+  writing-mode: vertical-rl;
 
-    writing-mode: vertical-rl;
+  transform: translateY(-50%) rotate(180deg);
 
-    transform: rotate(180deg);
-
-    transition: opacity 0.3s ease;
-  }
+  transition: opacity 0.3s ease;
+}
 
   .detail-preview-link:hover {
     opacity: 0.2;
@@ -469,14 +467,13 @@
   /* --------------------------------
      MEDIA GALLERY
   -------------------------------- */
-
 .detail-images {
   display: flex;
   flex-direction: column;
 
-  gap: 60px;
+  gap: 40px;
 
-  padding-top: 35svh;
+  padding-top: 208px;
   padding-bottom: 80px;
 }
 
