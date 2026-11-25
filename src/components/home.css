@@ -169,11 +169,28 @@ body {
 }
 
 .projects-link p,
-.intro-link p,
 .construction p {
   margin: 0;
-
+  
   font-family: var(--font-main);
+}
+
+.intro-link p {
+  margin: 0;
+
+  padding: 4px 10px;
+
+  border: 0.5px solid #797979;
+  border-radius: 30px;
+
+  background: #f5f5f5;
+
+  /* box-shadow: 0 0 6px 3px #f0f0f0; */
+
+  color: #111;
+
+  font-family: var(--font-description);
+  font-size: 12px;
 }
 
 /* --------------------------------
@@ -229,13 +246,19 @@ body {
 
 .construction {
   position: absolute;
+  
 
-  bottom: 12px;
+  bottom: 22px;
   right: 18px;
 
   font-size: 16px;
 
   z-index: 50;
+}
+
+.construction p {
+  padding: 0;
+  line-height: 0;
 }
 
 .construction p > span {
@@ -257,8 +280,8 @@ body {
 }
 
 .gradient-square {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
 
   background: radial-gradient(
     circle,
@@ -304,7 +327,7 @@ body {
 /* BOTTOM LEFT */
 
 .gradient-squares-bottom {
-  bottom: 51px;
+  bottom: 22px;
   left: 16px;
 
   display: flex;
@@ -469,3 +492,21 @@ body {
   }
 
 }
+
+  @media (min-width: 768px) {
+
+    .intro-link {
+      bottom: auto;
+      left: auto;
+
+      top: 18px;
+      right: 186px;
+
+      font-size: 16px;
+      white-space: nowrap;
+      line-height: 20px;
+
+      font-family: var(--font-description)
+    }
+
+  }
