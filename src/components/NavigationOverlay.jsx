@@ -16,7 +16,7 @@ const containerVariants = {
 
   visible: {
     transition: {
-      delayChildren: 1.25,
+      delayChildren: 0.65,
       staggerChildren: 0.2,
     },
   },
@@ -99,50 +99,41 @@ export default function NavigationOverlay({
       exit="exit"
     >
 
-{/* BLURRED BACKGROUND */}
+      {/* BLURRED BACKGROUND */}
 
-<motion.div
-  className="navigation-overlay-backdrop"
-  variants={{
-    hidden: {
-      opacity: 0,
-      y: "100%",
-    },
+      <motion.div
+        className="navigation-overlay-backdrop"
+        variants={{
+          hidden: {
+            opacity: 0,
+          },
 
-    visible: {
-      opacity: 1,
-      y: "0%",
+          visible: {
+            opacity: 1,
 
-      transition: {
-        y: {
-          duration: 1.2,
-          ease: [0.22, 1, 0.36, 1],
-        },
-        opacity: {
-          duration: 1.2,
-          ease: "easeInOut",
-        },
-      },
-    },
+            transition: {
+              duration: 0.6,
+              ease: "easeInOut",
+            },
+          },
 
-    exit: {
-      opacity: 0,
-      y: "100%",
+          exit: {
+            opacity: 0,
 
-      transition: {
-        delay: 0.65,
-        duration: 0.8,
-        ease: [0.22, 1, 0.36, 1],
-      },
-    },
-  }}
-/>
+            transition: {
+              delay: 0.65,
+              duration: 0.6,
+              ease: "easeInOut",
+            },
+          },
+        }}
+      />
 
       {/* STATIC PANEL */}
 
       <div className="navigation-overlay-panel">
 
-        {/* CLOSE BUTTON */}
+{/* CLOSE BUTTON */}
 
 <motion.div
   className="navigation-overlay-close"
@@ -154,7 +145,7 @@ export default function NavigationOverlay({
     visible: {
       opacity: 1,
       transition: {
-        delay: 1.25,
+        delay: 0.65,
         duration: 0.5,
       },
     },
@@ -169,8 +160,8 @@ export default function NavigationOverlay({
 >
   <motion.button
     type="button"
-    onClick={onClose}
     data-link-cursor
+    onClick={onClose}
     initial={{ opacity: 1 }}
     animate={{ opacity: 1 }}
     whileHover={{ opacity: 0.2 }}
@@ -261,12 +252,12 @@ function VisualExperimentsContent() {
       variants={containerVariants}
     >
 
-      <motion.h2
+      {/* <motion.h2
         className="visual-experiments-heading"
         variants={itemVariants}
       >
         visual experiments
-      </motion.h2>
+      </motion.h2> */}
 
       {visualExperiments.map((experiment) => (
         <motion.figure
@@ -307,11 +298,11 @@ function VisualExperimentsContent() {
             />
           )}
 
-          {experiment.caption && (
+          {/* {experiment.caption && (
             <figcaption>
               {experiment.caption}
             </figcaption>
-          )}
+          )} */}
 
         </motion.figure>
       ))}
