@@ -171,6 +171,16 @@ function ProjectMetadata({ project }) {
 
   return (
     <div className="detail-project-metadata">
+
+    <div className="detail-gradient-column">
+      {[1, 2, 3, 4].map((square) => (
+        <div
+          className={`gradient-square square-${square}`}
+          key={square}
+        />
+      ))}
+    </div>
+
       <div className="detail-categories">
         {categories.map((category) => (
           <span
@@ -184,9 +194,9 @@ function ProjectMetadata({ project }) {
 
       {technologies.length > 0 && (
         <div className="detail-technologies">
-          <span className="detail-technologies-heading">
+          {/* <span className="detail-technologies-heading">
             technologies used
-          </span>
+          </span> */}
 
           <div className="detail-technologies-list">
             {technologies.map((technology) => (
@@ -231,52 +241,36 @@ function ProjectNavigation({
       (currentIndex + 1) % total
     ];
 
-  return (
-    <nav
-      className="detail-project-navigation"
-      aria-label="Project navigation"
+return (
+  <nav
+    className="detail-project-navigation"
+    aria-label="Project navigation"
+  >
+    <button
+      type="button"
+      onClick={() =>
+        transitionTo(`/project/${previousProject.id}`)
+      }
     >
-      <button
-        type="button"
-        onClick={() =>
-          transitionTo(
-            `/project/${previousProject.id}`
-          )
-        }
-      >
-        <span className="detail-navigation-direction">
-          ← previous
-        </span>
+      ← {previousProject.title.toLowerCase()}
+    </button>
 
-        <span className="detail-navigation-name">
-          {previousProject.title.toLowerCase()}
-        </span>
-      </button>
+    <span className="detail-navigation-index">
+      {String(currentIndex + 1).padStart(2, "0")}
+      {" / "}
+      {String(total).padStart(2, "0")}
+    </span>
 
-      <span className="detail-navigation-index">
-        {String(currentIndex + 1).padStart(2, "0")}
-        {" / "}
-        {String(total).padStart(2, "0")}
-      </span>
-
-      <button
-        type="button"
-        onClick={() =>
-          transitionTo(
-            `/project/${nextProject.id}`
-          )
-        }
-      >
-        <span className="detail-navigation-direction">
-          next →
-        </span>
-
-        <span className="detail-navigation-name">
-          {nextProject.title.toLowerCase()}
-        </span>
-      </button>
-    </nav>
-  );
+    <button
+      type="button"
+      onClick={() =>
+        transitionTo(`/project/${nextProject.id}`)
+      }
+    >
+      {nextProject.title.toLowerCase()} →
+    </button>
+  </nav>
+);
 }
 
 export default function ProjectDetails() {
@@ -328,9 +322,9 @@ export default function ProjectDetails() {
 
 </motion.h1>
 
-      <motion.p className="detail-summary" variants={item}>
+      {/* <motion.p className="detail-summary" variants={item}>
         {project.summary.trim()}
-      </motion.p>
+      </motion.p> */}
 
       {isMobile ? (
   <motion.div
@@ -414,14 +408,14 @@ return (
 
     <div className="detail-left">
 
-      <div className="detail-gradient-column">
+      {/* <div className="detail-gradient-column">
         {[1, 2, 3, 4].map((square) => (
           <div
             className={`gradient-square square-${square}`}
             key={square}
           />
         ))}
-      </div>
+      </div> */}
 
       {header}
 

@@ -522,4 +522,22 @@ body {
       font-family: var(--font-description)
     }
 
+    .site-title-home-link {
+  padding: 0;
+  margin: 0;
+
+  border: none;
+  background: none;
+
+  font: inherit;
+  line-height: inherit;
+  color: inherit;
+
+  transition: opacity 0.4s ease-out;
+}
+
+.site-title-home-link:hover {
+  opacity: 0.3;
+}
+
   }

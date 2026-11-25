@@ -352,7 +352,19 @@ export default function Home() {
     }
   }}
 >
-  <h1>Charlotte Smit</h1>
+  <h1>
+  {!isMobile && isDetail ? (
+    <button
+      type="button"
+      onClick={() => transitionTo("/")}
+      className="site-title-home-link"
+    >
+      Charlotte Smit
+    </button>
+  ) : (
+    "Charlotte Smit"
+  )}
+</h1>
 </motion.div>
 
       {/* NAVIGATION */}
@@ -763,7 +775,7 @@ export default function Home() {
       {/* CLOSE BUTTON */}
 
       <AnimatePresence>
-        {isDetail && (
+        {isDetail && isMobile && (
           <motion.button
             key="close"
             type="button"
