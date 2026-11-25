@@ -144,35 +144,44 @@ export default function NavigationOverlay({
 
         {/* CLOSE BUTTON */}
 
-        <motion.button
-          type="button"
-          className="navigation-overlay-close"
-          onClick={onClose}
-          variants={{
-            hidden: {
-              opacity: 0,
-            },
+<motion.div
+  className="navigation-overlay-close"
+  variants={{
+    hidden: {
+      opacity: 0,
+    },
 
-            visible: {
-                opacity: 1,
+    visible: {
+      opacity: 1,
+      transition: {
+        delay: 1.25,
+        duration: 0.5,
+      },
+    },
 
-                transition: {
-                    delay: 1.25,
-                    duration: 0.5,
-                },
-                },
-
-            exit: {
-              opacity: 0,
-
-              transition: {
-                duration: 0.3,
-              },
-            },
-          }}
-        >
-          close
-        </motion.button>
+    exit: {
+      opacity: 0,
+      transition: {
+        duration: 0.3,
+      },
+    },
+  }}
+>
+  <motion.button
+    type="button"
+    onClick={onClose}
+    data-link-cursor
+    initial={{ opacity: 1 }}
+    animate={{ opacity: 1 }}
+    whileHover={{ opacity: 0.2 }}
+    transition={{
+      duration: 0.3,
+      ease: "easeInOut",
+    }}
+  >
+    close
+  </motion.button>
+</motion.div>
 
         {/* SCROLLABLE CONTENT */}
 
