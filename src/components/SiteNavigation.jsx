@@ -9,8 +9,8 @@ const contactLinks = [
     href: "mailto:hello@charlottesmit.com",
   },
   {
-    label: "instagram.com/char_smit",
-    href: "https://instagram.com/char_smit",
+    label: "instagram.com/char__smit",
+    href: "https://instagram.com/char__smit",
   },
   {
     label: "github.com/chazrsmit",

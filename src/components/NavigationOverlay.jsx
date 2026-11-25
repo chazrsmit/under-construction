@@ -16,7 +16,7 @@ const containerVariants = {
 
   visible: {
     transition: {
-      delayChildren: 0.65,
+      delayChildren: 1.25,
       staggerChildren: 0.2,
     },
   },
@@ -99,35 +99,44 @@ export default function NavigationOverlay({
       exit="exit"
     >
 
-      {/* BLURRED BACKGROUND */}
+{/* BLURRED BACKGROUND */}
 
-      <motion.div
-        className="navigation-overlay-backdrop"
-        variants={{
-          hidden: {
-            opacity: 0,
-          },
+<motion.div
+  className="navigation-overlay-backdrop"
+  variants={{
+    hidden: {
+      opacity: 0,
+      y: "100%",
+    },
 
-          visible: {
-            opacity: 1,
+    visible: {
+      opacity: 1,
+      y: "0%",
 
-            transition: {
-              duration: 0.6,
-              ease: "easeInOut",
-            },
-          },
+      transition: {
+        y: {
+          duration: 1.2,
+          ease: [0.22, 1, 0.36, 1],
+        },
+        opacity: {
+          duration: 1.2,
+          ease: "easeInOut",
+        },
+      },
+    },
 
-          exit: {
-            opacity: 0,
+    exit: {
+      opacity: 0,
+      y: "100%",
 
-            transition: {
-              delay: 0.65,
-              duration: 0.6,
-              ease: "easeInOut",
-            },
-          },
-        }}
-      />
+      transition: {
+        delay: 0.65,
+        duration: 0.8,
+        ease: [0.22, 1, 0.36, 1],
+      },
+    },
+  }}
+/>
 
       {/* STATIC PANEL */}
 
@@ -145,13 +154,13 @@ export default function NavigationOverlay({
             },
 
             visible: {
-              opacity: 1,
+                opacity: 1,
 
-              transition: {
-                delay: 0.65,
-                duration: 0.5,
-              },
-            },
+                transition: {
+                    delay: 1.25,
+                    duration: 0.5,
+                },
+                },
 
             exit: {
               opacity: 0,
@@ -301,4 +310,3 @@ function VisualExperimentsContent() {
     </motion.div>
   );
 }
-    
