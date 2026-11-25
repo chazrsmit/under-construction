@@ -2,7 +2,7 @@ export const visualExperiments = [
   {
     id: 1,
     type: "image",
-    src: "poster-2.jpg",
+    src: "poster-2.png",
     alt: "Visual experiment",
     caption: "poster for attuned - september 2026",
     width: "16%",
