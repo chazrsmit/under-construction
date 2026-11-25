@@ -39,14 +39,24 @@ export const visualExperiments = [
     right: "0%",
     marginTop: "0px",
   },
-    {
+  {
     id: 5,
     type: "image",
     src: "still-1.png",
     alt: "Visual experiment",
     caption: "still from my short film 'rush hour'",
     width: "20%",
-    left: "45%",
+    left: "47%",
+    marginTop: "0px",
+  },
+  {
+    id: 6,
+    type: "video",
+    src: "demo-glsl2.mp4",
+    alt: "Visual experiment",
+    caption: "visuals coded with glsl as part of an SFPC class",
+    width: "20%",
+    left: "20%",
     marginTop: "0px",
   },
 

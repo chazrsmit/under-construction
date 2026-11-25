@@ -29,6 +29,10 @@ import "./home.css";
 import "./site-nav.css";
 import SiteNavigation from "./SiteNavigation";
 
+import PageTransition, {
+  usePageTransition,
+} from "./PageTransition";
+
 /* --------------------------------
    PROJECTS
 -------------------------------- */
@@ -145,6 +149,13 @@ export default function Home() {
 
   const navigate = useNavigate();
 
+  const {
+  phase,
+  transitionTo,
+  handleCovered,
+  handleRevealed,
+} = usePageTransition(navigate, isMobile);
+
   const projectsData = getProjects(isMobile);
 
   const [titleDocked, setTitleDocked] = useState(false);
@@ -178,6 +189,7 @@ export default function Home() {
   const outlet = useOutlet({
     isMobile,
     projects: projectsData,
+    transitionTo,
   });
 
   const isDetail = Boolean(outlet);
@@ -278,7 +290,7 @@ export default function Home() {
      PROJECT NAVIGATION
   -------------------------------- */
 
-  const handleProjectClick = (project) => {
+    const handleProjectClick = (project) => {
     if (
       !projectsData.some(
         (p) => p.id === project.id
@@ -287,16 +299,17 @@ export default function Home() {
       return;
     }
 
-    navigate(`/project/${project.id}`);
+    transitionTo(`/project/${project.id}`);
   };
 
   return (
-    <main
-      className={`home
-        ${projectsOpen ? "projects-open" : ""}
-        ${!isMobile && !isDetail ? "desktop-homepage" : ""}
-      `}
-    >
+<main
+  className={`home
+    ${projectsOpen ? "projects-open" : ""}
+    ${!isMobile ? "desktop-homepage" : ""}
+    ${isDetail ? "project-detail-open" : ""}
+  `}
+>
       {/* GLOBAL CUSTOM CURSOR */}
 
       <CustomCursor />
@@ -715,6 +728,7 @@ export default function Home() {
         <p>iteration 1.?</p>
       </motion.div>
 
+
       {/* --------------------------------
           PROJECT DETAILS
       -------------------------------- */}
@@ -728,11 +742,11 @@ export default function Home() {
           <motion.div
             key="details"
             className="details-layer"
-            initial={{ opacity: 0 }}
+            initial={{ opacity: isMobile ? 0 : 1 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            exit={{ opacity: isMobile ? 0 : 1 }}
             transition={{
-              duration: 0.4,
+              duration: isMobile ? 0.4 : 0,
               ease: "easeOut",
             }}
             onScroll={(event) =>
@@ -754,7 +768,7 @@ export default function Home() {
             key="close"
             type="button"
             className="detail-close"
-            onClick={() => navigate("/")}
+            onClick={() => transitionTo("/")}
             initial={{
               opacity: 0,
               filter: "blur(8px)",
@@ -782,6 +796,11 @@ export default function Home() {
           </motion.button>
         )}
       </AnimatePresence>
+      <PageTransition
+  phase={phase}
+  onCovered={handleCovered}
+  onRevealed={handleRevealed}
+/>
     </main>
   );
 }

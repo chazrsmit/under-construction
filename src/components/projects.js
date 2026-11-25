@@ -1,8 +1,9 @@
-// Prefixes a public/ path with Vite's base URL (needed on GitHub Pages)
+import { compositionProjects } from "./compositionData";
+
 export const asset = (path) => (path ? `${import.meta.env.BASE_URL}${path}` : "");
 
 export function getProjects(isMobile) {
-  return [
+  const details = [
     {
       id: "litteria",
       title: "Litteria",
@@ -25,6 +26,41 @@ export function getProjects(isMobile) {
       caption1: "Homepage of Litteria",
       caption2: "",
       caption3: "",
+      media: [
+        {
+          type: "video",
+          src: "images/litteria-vid.mp4",
+          caption: "",
+          width: "100%",
+        },
+        {
+          type: "image",
+          src: "images/Litteria - mobile mockups.png",
+          caption: "",
+          width: "100%",
+        },
+      ],
     },
   ];
+
+
+  return compositionProjects
+  .map((composition) => {
+    const projectDetails = details.find(
+      (project) => project.id === composition.id
+    );
+
+    return {
+      title: composition.name,
+      summary: "",
+      technologies: "",
+      ...projectDetails,
+
+      id: composition.id,
+      number: composition.number,
+      categories: composition.categories,
+    };
+  })
+  .sort((a, b) => a.title.localeCompare(b.title));
+
 }

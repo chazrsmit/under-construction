@@ -1,4 +1,5 @@
 
+
 export const compositionSettings = {
   imageWidth: 17.2, // Percentage of viewport width
   imageAspectRatio: 2.04,
