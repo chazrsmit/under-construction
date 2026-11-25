@@ -695,7 +695,7 @@ export default function Home() {
             <span>(...)</span>
           </p>
         ) : (
-          <p>hi, i'm a web designer and developer.</p>
+          <p>hi! i'm a web designer and developer.</p>
         )}
       </motion.div>
 
