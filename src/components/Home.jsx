@@ -27,6 +27,7 @@ import {
 
 import "./home.css";
 import "./site-nav.css";
+import SiteNavigation from "./SiteNavigation";
 
 /* --------------------------------
    PROJECTS
@@ -343,25 +344,9 @@ export default function Home() {
 
       {/* NAVIGATION */}
 
-      <motion.nav
-        className="site-nav"
-        initial={{ opacity: 0 }}
-        animate={{
-          opacity: showContent ? 1 : 0,
-        }}
-        transition={{
-          duration: 0.8,
-          ease: "easeOut",
-        }}
-      >
-        <button type="button">about</button>
-
-        <button type="button">contact</button>
-
-        <button type="button">
-          visual experiments
-        </button>
-      </motion.nav>
+      {!isMobile && (
+  <SiteNavigation showContent={showContent} />
+)}
 
       {/* FIRST GRADIENT GROUP */}
 

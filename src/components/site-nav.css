@@ -66,3 +66,90 @@
   }
 
 }
+
+/* --------------------------------
+   NAVIGATION ITEMS
+-------------------------------- */
+
+.site-nav-item {
+  position: relative;
+}
+
+.site-nav-item > button {
+  padding: 0;
+  margin: 0;
+
+  border: none;
+  background: none;
+
+  font: inherit;
+  color: inherit;
+}
+
+/* --------------------------------
+   CONTACT LINKS
+-------------------------------- */
+
+.contact-links {
+  position: absolute;
+
+  top: calc(100% + 22px);
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 8px;
+
+  width: 170px;
+
+  z-index: 60;
+}
+
+.contact-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-height: 25px;
+
+  padding: 6px 10px;
+
+  border: 1px solid #aaa;
+  border-radius: 30px;
+
+  background: #f0f0f0;
+  box-shadow: 0 0 6px 3px #f0f0f0;
+
+  font-family: var(--font-description);
+  font-size: 10px;
+  font-style: italic;
+  font-weight: 400;
+
+  line-height: 1.2;
+
+  color: #111;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+.contact-link:hover {
+  background-color: #111;
+  color: #f0f0f0;
+}
+
+/* Disable the existing nav link background
+   pseudo-element for the contact pills */
+
+.site-nav .contact-link::before {
+  content: none;
+}
