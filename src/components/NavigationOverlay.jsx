@@ -264,11 +264,12 @@ function VisualExperimentsContent() {
           key={experiment.id}
           className="visual-experiment"
           variants={itemVariants}
-          style={{
+            style={{
             width: experiment.width,
-            marginLeft: experiment.left,
+            marginLeft: experiment.right != null ? "auto" : experiment.left,
+            marginRight: experiment.right,
             marginTop: experiment.marginTop,
-          }}
+            }}
         >
 
           {experiment.type === "image" && (
@@ -283,26 +284,26 @@ function VisualExperimentsContent() {
             />
           )}
 
-          {experiment.type === "video" && (
-            <video
-              src={
-                baseUrl +
-                "videos/" +
-                experiment.src
-              }
-              muted
-              loop
-              playsInline
-              controls
-              preload="none"
-            />
-          )}
+        {experiment.type === "video" && (
+        <video
+            src={
+            baseUrl +
+            "images/" +
+            experiment.src
+            }
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+        />
+        )}
 
-          {/* {experiment.caption && (
+          {experiment.caption && (
             <figcaption>
               {experiment.caption}
             </figcaption>
-          )} */}
+          )}
 
         </motion.figure>
       ))}

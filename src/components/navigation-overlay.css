@@ -171,9 +171,19 @@
 .visual-experiment figcaption {
   margin-top: 8px;
 
-  font-family: var(--font-description);
-  font-size: 11px;
+  font-family: var(--font-main);
+  font-size: 13px;
   font-style: italic;
 
-  color: #555;
+  color: #000;
+
+  background: #f0f0f0;
+
+  box-shadow: 0 0 6px 3px #f0f0f0;
+
+  border-radius: 3px;
+  padding-left: 3px;
+  padding-right: 3px;
+  
+  width: fit-content;
 }
