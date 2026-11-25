@@ -60,7 +60,7 @@
   position: absolute;
 
   font-family: var(--font-title);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: normal;
 
   white-space: nowrap;
@@ -256,13 +256,13 @@
 
 .project-list-number {
   font-family: var(--font-title);
-  font-size: 11px;
+  font-size: 14px;
   font-style: normal;
 }
 
 .project-list-name {
   font-family: var(--font-main);
-  font-size: 16px;
+  font-size: 18px;
   font-style: italic;
 }
 
