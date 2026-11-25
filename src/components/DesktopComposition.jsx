@@ -1,4 +1,3 @@
-
 import {
   useState,
   useEffect,
@@ -29,12 +28,11 @@ const clamp = (value, min, max) =>
   Math.min(Math.max(value, min), max);
 
 /* --------------------------------
-   INDIVIDUAL DRAGGABLE IMAGE
+   INDIVIDUAL PROJECT IMAGE
 -------------------------------- */
 
-function DraggableProject({
+function ProjectImage({
   project,
-  stageRef,
   dimensions,
   isHovered,
   isAnimating,
@@ -42,11 +40,11 @@ function DraggableProject({
   createTrailLayer,
   zIndex,
   setHoveredImage,
+  onProjectClick,
 }) {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
-  const draggingRef = useRef(false);
   const initializedRef = useRef(false);
   const activeRef = useRef(false);
 
@@ -112,6 +110,7 @@ function DraggableProject({
       y.set(Math.round(initialY));
 
       initializedRef.current = true;
+
     } else {
       x.set(clamp(x.get(), 0, maxX));
       y.set(clamp(y.get(), 0, maxY));
@@ -121,6 +120,7 @@ function DraggableProject({
       x: x.get(),
       y: y.get(),
     };
+
   }, [
     dimensions.width,
     dimensions.height,
@@ -231,48 +231,24 @@ function DraggableProject({
   }
 
   /* --------------------------------
-     PROJECT LINK HOVER
+     IMAGE ANIMATION
   -------------------------------- */
 
   useEffect(() => {
     if (!initializedRef.current) return;
 
-    if (isHovered) {
+    if (shouldMove && !activeRef.current) {
       activeRef.current = true;
 
-      if (!draggingRef.current) {
-        startTrail();
-      }
-    } else if (activeRef.current) {
+      startTrail();
+
+    } else if (!shouldMove && activeRef.current) {
       activeRef.current = false;
 
-      if (!draggingRef.current) {
-        stopTrail();
-      }
-    }
-  }, [isHovered]);
-
-  /* --------------------------------
-   IMAGE ANIMATION
--------------------------------- */
-
-useEffect(() => {
-  if (!initializedRef.current) return;
-
-  if (shouldMove) {
-    activeRef.current = true;
-
-    if (!draggingRef.current) {
-      startTrail();
-    }
-  } else if (activeRef.current) {
-    activeRef.current = false;
-
-    if (!draggingRef.current) {
       stopTrail();
     }
-  }
-}, [shouldMove]);
+
+  }, [shouldMove]);
 
   /* --------------------------------
      AUTONOMOUS MOVEMENT
@@ -280,11 +256,6 @@ useEffect(() => {
 
   useAnimationFrame((time, delta) => {
     if (!initializedRef.current) return;
-
-    if (draggingRef.current) {
-      updateTrail();
-      return;
-    }
 
     if (!shouldMove) return;
 
@@ -354,30 +325,6 @@ useEffect(() => {
   });
 
   /* --------------------------------
-     DRAGGING
-  -------------------------------- */
-
-  function handleDragStart() {
-    draggingRef.current = true;
-
-    if (trailLayerRef.current) {
-      stopTrail();
-    }
-
-    startTrail();
-  }
-
-  function handleDragEnd() {
-    updateTrail();
-
-    draggingRef.current = false;
-
-    if (!activeRef.current) {
-      stopTrail();
-    }
-  }
-
-  /* --------------------------------
      IMAGE HOVER
   -------------------------------- */
 
@@ -392,16 +339,52 @@ useEffect(() => {
   }
 
   /* --------------------------------
+     IMAGE CLICK
+  -------------------------------- */
+
+  function handleImageClick() {
+    if (shouldMove) return;
+
+    onProjectClick(project);
+  }
+
+  /* --------------------------------
      RENDER IMAGE
   -------------------------------- */
 
   return (
     <motion.div
       className="composition-image-wrapper"
-      data-drag-cursor
+
+      data-mockup-cursor={
+        !shouldMove && project.mockup
+          ? imagePath(project.mockup)
+          : undefined
+      }
+
+      data-mockup-width={
+        project.mockupWidth || 150
+      }
+
+      data-link-cursor={
+        !shouldMove ? "" : undefined
+      }
 
       onMouseEnter={handleImageEnter}
       onMouseLeave={handleImageLeave}
+
+      onClick={handleImageClick}
+
+      role="link"
+      aria-label={`View ${project.name}`}
+      aria-disabled={shouldMove}
+      tabIndex={shouldMove ? -1 : 0}
+
+      onKeyDown={(event) => {
+        if (event.key === "Enter") {
+          handleImageClick();
+        }
+      }}
 
       style={{
         x,
@@ -410,14 +393,8 @@ useEffect(() => {
         height: imageHeight,
         zIndex,
       }}
-      drag
-      dragConstraints={stageRef}
-      dragMomentum={false}
-      dragElastic={0}
-      onDragStart={handleDragStart}
-      onDrag={updateTrail}
-      onDragEnd={handleDragEnd}
     >
+
       <motion.img
         className="composition-image"
         src={imagePath(project.image)}
@@ -437,6 +414,7 @@ useEffect(() => {
       <motion.div
         className="composition-hover-target"
       />
+
     </motion.div>
   );
 }
@@ -473,9 +451,11 @@ function CompositionContent({
   const highlightedProject =
     hoveredProject ?? hoveredImage;
 
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [isAnimating, setIsAnimating] =
+    useState(false);
 
-  const [imageResetKey, setImageResetKey] = useState(0);
+  const [imageResetKey, setImageResetKey] =
+    useState(0);
 
   /* --------------------------------
      DIMENSIONS AND Z-INDEX STATES
@@ -494,6 +474,20 @@ function CompositionContent({
       ])
     )
   );
+
+  /* --------------------------------
+     PRELOAD MOCKUPS
+  -------------------------------- */
+
+  useEffect(() => {
+    compositionProjects.forEach((project) => {
+      if (!project.mockup) return;
+
+      const image = new Image();
+
+      image.src = imagePath(project.mockup);
+    });
+  }, []);
 
   /* --------------------------------
      VIEWPORT DIMENSIONS
@@ -520,6 +514,7 @@ function CompositionContent({
     observer.observe(stage);
 
     return () => observer.disconnect();
+
   }, []);
 
   /* --------------------------------
@@ -574,8 +569,12 @@ function CompositionContent({
     compositionProjects.slice(4),
   ];
 
+  /* --------------------------------
+     ANIMATION CONTROLS
+  -------------------------------- */
+
   function toggleAnimation() {
-  setIsAnimating((previous) => !previous);
+    setIsAnimating((previous) => !previous);
   }
 
   function clearComposition() {
@@ -602,19 +601,28 @@ function CompositionContent({
     setImageResetKey((previous) => previous + 1);
   }
 
+  /* --------------------------------
+     RENDER
+  -------------------------------- */
+
   return (
     <>
+
       <motion.div
         ref={stageRef}
         className="desktop-composition"
+
         initial={{ opacity: 0 }}
+
         animate={{
           opacity: showContent ? 1 : 0,
         }}
+
         transition={{
           duration: 0.8,
           ease: "easeOut",
         }}
+
         style={{
           visibility: showContent
             ? "visible"
@@ -622,7 +630,9 @@ function CompositionContent({
         }}
       >
 
-        {/* BACKGROUND */}
+        {/* --------------------------------
+            BACKGROUND
+        -------------------------------- */}
 
         <img
           className="composition-background"
@@ -631,7 +641,9 @@ function CompositionContent({
           draggable={false}
         />
 
-        {/* STATIC NUMBERS */}
+        {/* --------------------------------
+            STATIC NUMBERS
+        -------------------------------- */}
 
         <div
           className="composition-static-numbers"
@@ -639,6 +651,7 @@ function CompositionContent({
         >
           {dimensions.width > 0 &&
             compositionProjects.map((project) => {
+
               const initialX = clamp(
                 dimensions.width *
                   (project.position.x / 100),
@@ -663,6 +676,7 @@ function CompositionContent({
                 <div
                   key={project.id}
                   className="static-number-wrapper"
+
                   style={{
                     left: Math.round(initialX),
                     top: Math.round(initialY),
@@ -670,49 +684,62 @@ function CompositionContent({
                     height: imageHeight,
                   }}
                 >
+
                   <span
                     className="composition-image-number"
                     style={project.numberPosition}
                   >
                     ({project.number})
                   </span>
+
                 </div>
               );
             })}
         </div>
 
+        {/* --------------------------------
+            RESETTABLE COMPOSITION
+        -------------------------------- */}
+
         <Fragment key={imageResetKey}>
 
-  {/* PERSISTENT TRACES */}
+          {/* PERSISTENT TRACES */}
 
-  <div
-    className="composition-trails"
-    aria-hidden="true"
-  />
+          <div
+            className="composition-trails"
+            aria-hidden="true"
+          />
 
-  {/* DRAGGABLE IMAGES */}
+          {/* PROJECT IMAGES */}
 
-  <div className="composition-images">
-    {dimensions.width > 0 &&
-      compositionProjects.map((project) => (
-        <DraggableProject
-          key={project.id}
-          project={project}
-          stageRef={stageRef}
-          dimensions={dimensions}
-          isHovered={
-            hoveredProject === project.id
-          }
-          isAnimating={isAnimating}
-          bringToFront={bringToFront}
-          createTrailLayer={createTrailLayer}
-          zIndex={zIndexes[project.id]}
-          setHoveredImage={setHoveredImage}
-        />
-      ))}
-  </div>
+          <div className="composition-images">
 
-</Fragment>
+            {dimensions.width > 0 &&
+              compositionProjects.map((project) => (
+                <ProjectImage
+                  key={project.id}
+                  project={project}
+                  dimensions={dimensions}
+
+                  isHovered={
+                    hoveredProject === project.id
+                  }
+
+                  isAnimating={isAnimating}
+
+                  bringToFront={bringToFront}
+                  createTrailLayer={createTrailLayer}
+
+                  zIndex={zIndexes[project.id]}
+
+                  setHoveredImage={setHoveredImage}
+                  onProjectClick={onProjectClick}
+                />
+              ))}
+
+          </div>
+
+        </Fragment>
 
       </motion.div>
 
@@ -722,25 +749,31 @@ function CompositionContent({
 
       <motion.div
         className="desktop-project-list"
+
         initial={{ opacity: 0 }}
+
         animate={{
           opacity: showContent ? 1 : 0,
         }}
+
         transition={{
           duration: 0.8,
           ease: "easeOut",
         }}
+
         style={{
           pointerEvents: showContent
             ? "auto"
             : "none",
         }}
       >
+
         {projectRows.map((row, rowIndex) => (
           <div
             className={`desktop-project-row row-${rowIndex + 1}`}
             key={rowIndex}
           >
+
             {row.map((project) => {
 
               const isFaded =
@@ -751,37 +784,48 @@ function CompositionContent({
                 <div
                   key={project.id}
                   className="desktop-project-item"
+
                   onMouseEnter={() =>
                     setHoveredProject(project.id)
                   }
+
                   onMouseLeave={() =>
                     setHoveredProject(null)
                   }
                 >
+
                   <button
                     type="button"
                     className="desktop-project-button"
+
                     data-cursor={project.categories}
+
                     data-cursor-placement={
                       rowIndex === 0
                         ? "top"
                         : "bottom"
                     }
+
                     onClick={() =>
                       onProjectClick(project)
                     }
+
                     tabIndex={showContent ? 0 : -1}
                   >
+
                     <motion.span
                       className="project-button-content"
+
                       animate={{
                         opacity: isFaded ? 0.2 : 1,
                       }}
+
                       transition={{
                         duration: 0.45,
                         ease: "easeOut",
                       }}
                     >
+
                       <span className="project-list-number">
                         ({project.number})
                       </span>
@@ -789,60 +833,74 @@ function CompositionContent({
                       <span className="project-list-name">
                         {project.name}
                       </span>
+
                     </motion.span>
+
                   </button>
+
                 </div>
               );
             })}
+
           </div>
         ))}
+
       </motion.div>
 
-    {/* --------------------------------
-    ANIMATION CONTROLS
--------------------------------- */}
+      {/* --------------------------------
+          ANIMATION CONTROLS
+      -------------------------------- */}
 
-<motion.div
-  className="composition-controls"
-  initial={{ opacity: 0 }}
-  animate={{
-    opacity: showContent ? 1 : 0,
-  }}
-  transition={{
-    duration: 0.8,
-    ease: "easeOut",
-  }}
-  style={{
-    pointerEvents: showContent ? "auto" : "none",
-  }}
->
-  <button
-    type="button"
-    className="composition-control-button"
-    onClick={toggleAnimation}
-    tabIndex={showContent ? 0 : -1}
-    aria-pressed={isAnimating}
-  >
-    {isAnimating
-      ? "stop animation"
-      : "start animation"}
-  </button>
+      <motion.div
+        className="composition-controls"
 
-  <button
-    type="button"
-    className="composition-control-button"
-    onClick={clearComposition}
-    tabIndex={showContent ? 0 : -1}
-  >
-    clear
-  </button>
-</motion.div>
+        initial={{ opacity: 0 }}
+
+        animate={{
+          opacity: showContent ? 1 : 0,
+        }}
+
+        transition={{
+          duration: 0.8,
+          ease: "easeOut",
+        }}
+
+        style={{
+          pointerEvents: showContent
+            ? "auto"
+            : "none",
+        }}
+      >
+
+        <button
+          type="button"
+          className="composition-control-button"
+          onClick={toggleAnimation}
+          tabIndex={showContent ? 0 : -1}
+          aria-pressed={isAnimating}
+        >
+          {isAnimating
+            ? "stop animation"
+            : "start animation"}
+        </button>
+
+        <button
+          type="button"
+          className="composition-control-button"
+          onClick={clearComposition}
+          tabIndex={showContent ? 0 : -1}
+        >
+          clear
+        </button>
+
+      </motion.div>
+
     </>
   );
 }
 
 /* --------------------------------
-   RESETTABLE DESKTOP COMPOSITION
+   DESKTOP COMPOSITION
 -------------------------------- */
 
 export default function DesktopComposition({

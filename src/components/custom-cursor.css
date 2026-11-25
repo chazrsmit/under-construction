@@ -224,3 +224,39 @@
   line-height: 1;
   white-space: nowrap;
 }
+
+/* --------------------------------
+   PROJECT MOCKUP CURSOR
+-------------------------------- */
+
+.cursor-mockup-wrapper {
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  width: 0;
+  height: 0;
+
+  pointer-events: none;
+}
+
+.cursor-mockup {
+  position: absolute;
+
+  top: 18px;
+  left: 18px;
+
+  display: block;
+
+  height: auto;
+  max-width: none;
+
+  object-fit: contain;
+
+  pointer-events: none;
+
+  transform-origin: top left;
+
+  user-select: none;
+}

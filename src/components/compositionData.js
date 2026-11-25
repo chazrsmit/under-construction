@@ -61,6 +61,8 @@ export const compositionProjects = [
     name: "Litteria",
     categories: "UX/UI, DEVELOPMENT",
     image: "litteria1.png",
+    mockup: "litteria-mockup.png",
+    mockupWidth: 60,
     position: { x: 63.7, y: 58.1 },
     numberPosition: { bottom: -22, right: 0 },
     zIndex: 7,

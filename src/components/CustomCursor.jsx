@@ -54,23 +54,30 @@ export default function CustomCursor() {
   const [cursorType, setCursorType] = useState("default");
   const [placement, setPlacement] = useState("bottom");
 
+  const [mockup, setMockup] = useState("");
+  const [mockupWidth, setMockupWidth] = useState(150);
+
   /* --------------------------------
      POINTER EVENTS
   -------------------------------- */
 
   useEffect(() => {
+
     function updateCursor(target) {
       if (!(target instanceof Element)) return;
 
       const category = target.closest("[data-cursor]");
 
-      const draggable = target.closest("[data-drag-cursor]");
+      const mockupTarget = target.closest(
+        "[data-mockup-cursor]"
+      );
 
       const link = target.closest(
         "a, button, [data-link-cursor]"
       );
 
       if (category) {
+
         setCursorText(
           category.getAttribute("data-cursor") || ""
         );
@@ -82,14 +89,28 @@ export default function CustomCursor() {
 
         setCursorType("category");
 
-      } else if (draggable) {
-        setCursorType("drag");
+      } else if (mockupTarget) {
+
+        setMockup(
+          mockupTarget.getAttribute("data-mockup-cursor")
+        );
+
+        setMockupWidth(
+          Number(
+            mockupTarget.getAttribute("data-mockup-width")
+          ) || 150
+        );
+
+        setCursorType("mockup");
 
       } else if (link) {
+
         setCursorType("link");
 
       } else {
+
         setCursorType("default");
+
       }
     }
 
@@ -143,11 +164,13 @@ export default function CustomCursor() {
         handlePointerLeave
       );
     };
+
   }, [x, y]);
 
   const showSquare =
     cursorType === "default" ||
-    cursorType === "link";
+    cursorType === "link" ||
+    cursorType === "mockup";
 
   /* --------------------------------
      RENDER
@@ -180,47 +203,72 @@ export default function CustomCursor() {
         }}
       >
 
-        {/* GREY GRADIENT */}
-
         <motion.div
           className="cursor-gradient cursor-gradient-grey"
           animate={{
-            opacity: cursorType === "link" ? 0 : 1,
+            opacity:
+              cursorType === "link" ||
+              cursorType === "mockup"
+                ? 0
+                : 1,
           }}
           transition={{ duration: 0.3 }}
         />
 
-        {/* BLACK GRADIENT */}
-
         <motion.div
           className="cursor-gradient cursor-gradient-black"
           animate={{
-            opacity: cursorType === "link" ? 1 : 0,
+            opacity:
+              cursorType === "link" ||
+              cursorType === "mockup"
+                ? 1
+                : 0,
           }}
           transition={{ duration: 0.3 }}
         />
 
       </motion.div>
 
-      {/* DRAG CURSOR */}
+      {/* PROJECT MOCKUP */}
 
-      <AnimatePresence>
-        {cursorType === "drag" && (
-          <motion.div
-            className="custom-cursor-drag-text"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{
-              duration: 0.25,
-              ease: "easeInOut",
-            }}
-          >
-            <span className="drag-gradient-square" />
-            <span className="drag-label">drag</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <motion.div
+        className="cursor-mockup-wrapper"
+        style={{
+          x: labelX,
+          y: labelY,
+        }}
+      >
+        <AnimatePresence>
+          {cursorType === "mockup" && mockup && (
+            <motion.img
+              key={mockup}
+              className="cursor-mockup"
+              src={mockup}
+              alt=""
+              draggable={false}
+              style={{
+                width: mockupWidth,
+              }}
+              initial={{
+                opacity: 0,
+                scale: 0.92,
+              }}
+              animate={{
+                opacity: 1,
+                scale: 1,
+              }}
+              exit={{
+                opacity: 0,
+                scale: 0.92,
+              }}
+              transition={{
+                duration: 0.2,
+                ease: "easeOut",
+              }}
+            />
+          )}
+        </AnimatePresence>
+      </motion.div>
 
       {/* PROJECT CATEGORY LABEL */}
 

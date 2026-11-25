@@ -359,3 +359,9 @@
 
 }
 
+.composition-image-wrapper,
+.composition-image-wrapper:hover,
+.composition-image-wrapper:active,
+.composition-hover-target {
+  cursor: none;
+}
