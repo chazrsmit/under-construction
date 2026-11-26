@@ -89,6 +89,8 @@ export const compositionProjects = [
     name: "Oh Word",
     categories: "UX/UI, DEVELOPMENT",
     image: "Ohword1.png",
+    mockup: "ohword-mockup.png",
+    mockupWidth: 60,
     position: { x: 61.1, y: 47.2 },
     numberPosition: { top: -20, right: 0 },
     zIndex: 1,
