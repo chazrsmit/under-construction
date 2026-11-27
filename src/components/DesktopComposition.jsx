@@ -53,7 +53,7 @@ function ProjectImage({
 
   const trailLayerRef = useRef(null);
 
-  const shouldMove = isHovered || isAnimating;
+  const shouldMove = isAnimating ? !isHovered : isHovered;
   const showVideo = isImageHovered && !shouldMove && Boolean(videoSrc);
 
   const lastStamp = useRef({
@@ -529,6 +529,13 @@ function CompositionContent({
     return nextZIndex;
   }
 
+  // Keep the selected image above every moving image and trace.
+  useLayoutEffect(() => {
+    if (isAnimating && hoveredProject) {
+      bringToFront(hoveredProject);
+    }
+  }, [isAnimating, hoveredProject]);
+
   /* --------------------------------
      CREATE TRAIL LAYER
   -------------------------------- */
@@ -676,10 +683,17 @@ function CompositionContent({
                 >
 
                   <span
-                    className="composition-image-number"
+                    className={`composition-image-number ${
+                      project.numberPosition.right != null ? "extends-left" : "extends-right"
+                    } ${
+                      (hoveredProject ?? hoveredImage) === project.id ? "is-expanded" : ""
+                    }`}
                     style={project.numberPosition}
                   >
-                    ({project.number})
+                    <span className="composition-number-text">{project.number}</span>
+                    <span className="composition-name-reveal">
+                      <span className="composition-name-text">{project.name}</span>
+                    </span>
                   </span>
 
                 </div>
@@ -724,7 +738,9 @@ function CompositionContent({
                   bringToFront={bringToFront}
                   createTrailLayer={createTrailLayer}
 
-                  zIndex={zIndexes[project.id]}
+                  zIndex={isAnimating && hoveredProject === project.id
+                    ? Math.max(...Object.values(zIndexes)) + 2
+                    : zIndexes[project.id]}
 
                   setHoveredImage={setHoveredImage}
                   onProjectClick={onProjectClick}

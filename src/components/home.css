@@ -387,10 +387,10 @@ body {
   }
 
   .home.desktop-homepage:not(.project-detail-open) .gradient-squares-bottom {
-    bottom: 14px;
-    left: 50%;
-    translate: -50% 0;
-    flex-direction: row;
+    bottom: 42px;
+    left: 16px;
+    translate: none;
+    flex-direction: column;
   }
 
 
