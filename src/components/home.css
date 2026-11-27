@@ -4,7 +4,7 @@ body { margin:0; background:#f0f0f0; }
 .site-title { position:absolute; z-index:10; font-family:var(--font-title); width:max-content; white-space:nowrap; line-height:.5; }
 .site-title h1 { margin:0; }
 .site-title-centered { inset:0; margin:auto; height:max-content; font-size:28px; }
-.site-title-docked { inset:auto; top:20px; left:18px; margin:0; font-size:14px; }
+.site-title-docked { inset:auto; top:20px; left:18px; margin:0; font-size:13px; }
 .site-nav { position:absolute; top:20px; left:29.6%; display:flex; align-items:center; gap:46px; z-index:50; }
 .site-nav button { border:0; background:none; padding:0; margin:0; color:inherit; font-family:var(--font-main); font-size:15px; white-space:nowrap; transition:opacity .4s ease-out; }
 .site-nav button:hover { opacity:.3; }
@@ -86,5 +86,11 @@ body { margin:0; background:#f0f0f0; }
     letter-spacing: normal;
     text-transform: lowercase;
     white-space: nowrap;
+  }
+}
+
+@media (min-width: 768px) {
+  .home.project-detail-open .intro-link {
+    display: none;
   }
 }
