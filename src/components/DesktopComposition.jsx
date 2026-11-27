@@ -17,6 +17,7 @@ import {
   compositionSettings,
 } from "./compositionData";
 
+import { asset } from "./projects.js";
 import "./desktop-composition.css";
 
 const settings = compositionSettings;
@@ -41,6 +42,8 @@ function ProjectImage({
   zIndex,
   setHoveredImage,
   onProjectClick,
+  isImageHovered,
+  videoSrc,
 }) {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -51,6 +54,7 @@ function ProjectImage({
   const trailLayerRef = useRef(null);
 
   const shouldMove = isHovered || isAnimating;
+  const showVideo = isImageHovered && !shouldMove && Boolean(videoSrc);
 
   const lastStamp = useRef({
     x: 0,
@@ -356,15 +360,8 @@ function ProjectImage({
     <motion.div
       className="composition-image-wrapper"
 
-      data-mockup-cursor={
-        !shouldMove && project.mockup
-          ? imagePath(project.mockup)
-          : undefined
-      }
-
-      data-mockup-width={
-        project.mockupWidth || 150
-      }
+      data-cursor={!shouldMove ? project.categories : undefined}
+      data-cursor-placement="bottom"
 
       data-link-cursor={
         !shouldMove ? "" : undefined
@@ -409,6 +406,22 @@ function ProjectImage({
         }}
       />
 
+      {/* Video preview — only mounted during direct image hover */}
+      {showVideo && (
+        <video
+          className="composition-video"
+          src={videoSrc}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="none"
+          style={{ opacity: 0 }}
+          onPlaying={(event) => { event.currentTarget.style.opacity = "1"; }}
+          aria-hidden="true"
+        />
+      )}
+
       {/* Invisible hover target */}
 
       <motion.div
@@ -426,6 +439,11 @@ function ProjectImage({
 function CompositionContent({
   showContent,
   onProjectClick,
+  hoveredProject,
+  hoveredImage,
+  setHoveredImage,
+  setHoveredProject,
+  projectsData,
 }) {
   const stageRef = useRef(null);
 
@@ -441,15 +459,6 @@ function CompositionContent({
   /* --------------------------------
      HOVER STATES
   -------------------------------- */
-
-  const [hoveredProject, setHoveredProject] =
-    useState(null);
-
-  const [hoveredImage, setHoveredImage] =
-    useState(null);
-
-  const highlightedProject =
-    hoveredProject ?? hoveredImage;
 
   const [isAnimating, setIsAnimating] =
     useState(false);
@@ -474,20 +483,6 @@ function CompositionContent({
       ])
     )
   );
-
-  /* --------------------------------
-     PRELOAD MOCKUPS
-  -------------------------------- */
-
-  useEffect(() => {
-    compositionProjects.forEach((project) => {
-      if (!project.mockup) return;
-
-      const image = new Image();
-
-      image.src = imagePath(project.mockup);
-    });
-  }, []);
 
   /* --------------------------------
      VIEWPORT DIMENSIONS
@@ -563,11 +558,6 @@ function CompositionContent({
   const imageHeight = Math.round(
     imageWidth / settings.imageAspectRatio
   );
-
-  const projectRows = [
-    compositionProjects.slice(0, 4),
-    compositionProjects.slice(4),
-  ];
 
   /* --------------------------------
      ANIMATION CONTROLS
@@ -726,6 +716,10 @@ function CompositionContent({
                   }
 
                   isAnimating={isAnimating}
+                  isImageHovered={hoveredImage === project.id}
+                  videoSrc={asset(projectsData.find(
+                    (item) => item.id === project.id
+                  )?.media?.find((item) => item.type === "video")?.src)}
 
                   bringToFront={bringToFront}
                   createTrailLayer={createTrailLayer}
@@ -740,110 +734,6 @@ function CompositionContent({
           </div>
 
         </Fragment>
-
-      </motion.div>
-
-      {/* --------------------------------
-          PROJECT LIST
-      -------------------------------- */}
-
-      <motion.div
-        className="desktop-project-list"
-
-        initial={{ opacity: 0 }}
-
-        animate={{
-          opacity: showContent ? 1 : 0,
-        }}
-
-        transition={{
-          duration: 0.8,
-          ease: "easeOut",
-        }}
-
-        style={{
-          pointerEvents: showContent
-            ? "auto"
-            : "none",
-        }}
-      >
-
-        {projectRows.map((row, rowIndex) => (
-          <div
-            className={`desktop-project-row row-${rowIndex + 1}`}
-            key={rowIndex}
-          >
-
-            {row.map((project) => {
-
-              const isFaded =
-                highlightedProject !== null &&
-                highlightedProject !== project.id;
-
-              return (
-                <div
-                  key={project.id}
-                  className="desktop-project-item"
-
-                  onMouseEnter={() =>
-                    setHoveredProject(project.id)
-                  }
-
-                  onMouseLeave={() =>
-                    setHoveredProject(null)
-                  }
-                >
-
-                  <button
-                    type="button"
-                    className="desktop-project-button"
-
-                    data-cursor={project.categories}
-
-                    data-cursor-placement={
-                      rowIndex === 0
-                        ? "top"
-                        : "bottom"
-                    }
-
-                    onClick={() =>
-                      onProjectClick(project)
-                    }
-
-                    tabIndex={showContent ? 0 : -1}
-                  >
-
-                    <motion.span
-                      className="project-button-content"
-
-                      animate={{
-                        opacity: isFaded ? 0.2 : 1,
-                      }}
-
-                      transition={{
-                        duration: 0.45,
-                        ease: "easeOut",
-                      }}
-                    >
-
-                      <span className="project-list-number">
-                        ({project.number})
-                      </span>
-
-                      <span className="project-list-name">
-                        {project.name}
-                      </span>
-
-                    </motion.span>
-
-                  </button>
-
-                </div>
-              );
-            })}
-
-          </div>
-        ))}
 
       </motion.div>
 
@@ -903,14 +793,6 @@ function CompositionContent({
    DESKTOP COMPOSITION
 -------------------------------- */
 
-export default function DesktopComposition({
-  showContent,
-  onProjectClick,
-}) {
-  return (
-    <CompositionContent
-      showContent={showContent}
-      onProjectClick={onProjectClick}
-    />
-  );
+export default function DesktopComposition(props) {
+  return <CompositionContent {...props} />;
 }

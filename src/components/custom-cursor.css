@@ -1,34 +1,24 @@
-
 /* --------------------------------
    GLOBAL CURSOR
 -------------------------------- */
-
 .custom-cursor {
   position: fixed;
-
   top: 0;
   left: 0;
-
   width: 0;
   height: 0;
-
   pointer-events: none;
-
   z-index: 99999;
-
   will-change: transform;
 }
 
 /* --------------------------------
    GRADIENT SQUARE
 -------------------------------- */
-
 .custom-cursor-square {
   position: absolute;
-
   top: -5px;
   left: -5px;
-
   width: 10px;
   height: 10px;
 }
@@ -38,255 +28,86 @@
   inset: 0;
 }
 
-/* DEFAULT GREY GRADIENT */
-
 .cursor-gradient-grey {
-  background: radial-gradient(
-    circle,
-    #555 0%,
-    #999 50%,
-    #eee 100%
-  );
+  background: radial-gradient(circle, #555 0%, #999 50%, #eee 100%);
 }
-
-/* BLACK GRADIENT ON LINKS */
 
 .cursor-gradient-black {
-  background: radial-gradient(
-    circle,
-    #000 0%,
-    #111 55%,
-    #aaa 100%
-  );
+  background: radial-gradient(circle, #000 0%, #111 55%, #aaa 100%);
 }
 
 /* --------------------------------
-   DRAG CURSOR
+   SHARED SPRING PREVIEW
 -------------------------------- */
-
-.custom-cursor-drag {
+.cursor-preview {
   position: absolute;
-
-  width: 35px;
-  height: 35px;
-
-  top: -17.5px;
-  left: -17.5px;
-
-  object-fit: contain;
-
-  pointer-events: none;
-}
-
-/* --------------------------------
-   CATEGORY LABEL POSITION
--------------------------------- */
-
-.cursor-label-wrapper {
-  position: absolute;
-
-  top: 0;
   left: 0;
-
-  width: 0;
-  height: 0;
-
-  pointer-events: none;
-}
-
-.cursor-label-wrapper .custom-cursor-label {
-  position: absolute;
-
-  left: 0;
-
   width: max-content;
-
-  transform: translateX(-50%);
-
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
   pointer-events: none;
 }
 
-.cursor-label-top .custom-cursor-label {
-  top: auto;
-  bottom: 16px;
+.cursor-preview-bottom {
+  top: 16px;
+  flex-direction: column;
 }
 
-.cursor-label-bottom .custom-cursor-label {
-  top: 16px;
-  bottom: auto;
+.cursor-preview-top {
+  bottom: 16px;
+  flex-direction: column-reverse;
 }
 
 /* --------------------------------
    CATEGORY LABEL
 -------------------------------- */
-
 .custom-cursor-label {
-  padding: 6px 10px;
-
-  border: 0.5px solid #797979;
-  border-radius: 30px;
-
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 24px;
+  padding: 4px 20px;
+  border: 1px solid #494949;
+  border-radius: 0;
   background: #f5f5f5;
-
-  /* box-shadow: 0 0 6px 3px #f0f0f0; */
-
-  color: #111;
-
-  font-family: var(--font-description);
-  font-size: 11px;
-  /* font-style: italic; */
-  font-weight: normal;
-
+  color: #494949;
+  font-family: var(--font-interface, monospace);
+  font-size: 13px;
+  font-weight: 400;
+  font-style: normal;
   line-height: 1.2;
-
+  text-transform: lowercase;
   white-space: nowrap;
-
   pointer-events: none;
   user-select: none;
-
-  transition: none;
 }
 
 /* --------------------------------
-   DESKTOP
+   MOBILE MOCKUP
 -------------------------------- */
+.cursor-mockup {
+  display: block;
+  margin-left: 18px;
+  height: auto;
+  max-width: none;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
 
-@media (min-width: 768px)
-  and (hover: hover)
-  and (pointer: fine) {
-
+/* --------------------------------
+   RESPONSIVE CURSOR
+-------------------------------- */
+@media (min-width: 768px) and (hover: hover) and (pointer: fine) {
   body,
   body * {
     cursor: none !important;
   }
-
 }
 
-/* --------------------------------
-   MOBILE
--------------------------------- */
-
-@media (max-width: 767px),
-  (hover: none),
-  (pointer: coarse) {
-
+@media (max-width: 767px), (hover: none), (pointer: coarse) {
   .custom-cursor {
     display: none;
-  }
-
-}
-
-/* --------------------------------
-   DRAG CURSOR
--------------------------------- */
-
-.custom-cursor-drag-text {
-  position: absolute;
-
-  top: -5px;
-  left: -5px;
-
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  width: max-content;
-
-  pointer-events: none;
-}
-
-.drag-gradient-square {
-  width: 10px;
-  height: 10px;
-
-  background: radial-gradient(
-    circle,
-    #000 0%,
-    #111 55%,
-    #aaa 100%
-  );
-}
-
-.drag-label {
-  font-family: var(--font-main);
-  font-size: 13px;
-  font-style: italic;
-
-  color: #111;
-
-  background: #f0f0f0;
-  box-shadow: 0 0 6px 3px #f0f0f0;
-
-  border-radius: 3px;
-  padding-left: 3px;
-  padding-right: 3px;
-
-  line-height: 1;
-  white-space: nowrap;
-}
-
-/* --------------------------------
-   PROJECT MOCKUP CURSOR
--------------------------------- */
-
-.cursor-mockup-wrapper {
-  position: absolute;
-
-  top: 0;
-  left: 0;
-
-  width: 0;
-  height: 0;
-
-  pointer-events: none;
-}
-
-.cursor-mockup {
-  position: absolute;
-
-  top: 18px;
-  left: 18px;
-
-  display: block;
-
-  height: auto;
-  max-width: none;
-
-  object-fit: contain;
-
-  pointer-events: none;
-
-  transform-origin: top left;
-
-  user-select: none;
-}
-
-@media (min-width: 768px) {
-  .custom-cursor-label {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    min-height: 24px;
-    padding: 4px 20px;
-
-    border: none;
-    border-radius: 0;
-
-    background: #e8e8e8;
-    box-shadow: none;
-
-    font-family: "Google Sans Flex", sans-serif;
-    font-size: 13px;
-    font-weight: 400;
-    font-style: normal;
-
-    line-height: 1.2;
-    letter-spacing: normal;
-    text-transform: lowercase;
-
-    color: #626262;
-
-    white-space: nowrap;
   }
 }

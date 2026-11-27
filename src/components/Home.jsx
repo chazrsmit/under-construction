@@ -150,6 +150,9 @@ export default function Home() {
   );
 
   const navigate = useNavigate();
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [hoveredImage, setHoveredImage] = useState(null);
+
   const activeProject = useMatch("/project/:id")?.params.id;
 
   const {
@@ -197,6 +200,11 @@ export default function Home() {
 
   const isDetail = Boolean(outlet);
   const isMobileDetail = isMobile && isDetail;
+
+  useEffect(() => {
+    setHoveredIndex(null);
+    setHoveredImage(null);
+  }, [isDetail, isMobile]);
 
   const [projectsOpen, setProjectsOpen] =
     useState(isDetail);
@@ -376,8 +384,14 @@ export default function Home() {
   <SiteNavigation showContent={showContent} />
 )}
 
-      {!isMobile && isDetail && (
-        <ProjectIndex activeProject={activeProject} showContent={showContent} onProjectClick={handleProjectClick} />
+      {!isMobile && (
+        <ProjectIndex
+          activeProject={activeProject}
+          hoveredProject={!isDetail ? hoveredIndex ?? hoveredImage : null}
+          onProjectHover={!isDetail ? setHoveredIndex : undefined}
+          showContent={showContent}
+          onProjectClick={handleProjectClick}
+        />
       )}
 
       {/* FIRST GRADIENT GROUP */}
@@ -451,6 +465,11 @@ export default function Home() {
             showContent && !detailMounted
           }
           onProjectClick={handleProjectClick}
+          hoveredProject={hoveredIndex}
+          hoveredImage={hoveredImage}
+          setHoveredImage={setHoveredImage}
+          setHoveredProject={setHoveredIndex}
+          projectsData={projectsData}
         />
       )}
 
