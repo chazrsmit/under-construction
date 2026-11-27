@@ -172,16 +172,8 @@ function ProjectMetadata({ project }) {
   return (
     <div className="detail-project-metadata">
 
-    <div className="detail-gradient-column">
-      {[1, 2, 3, 4].map((square) => (
-        <div
-          className={`gradient-square square-${square}`}
-          key={square}
-        />
-      ))}
-    </div>
-
       <div className="detail-categories">
+        {project.id !== "litteria" && <span className="detail-status-label">ongoing</span>}
         {categories.map((category) => (
           <span
             className="detail-category-label"
@@ -283,58 +275,7 @@ export default function ProjectDetails() {
 
   const project = projects.find((p) => p.id === id);
 
-useEffect(() => {
-  if (isMobile) return;
 
-  const upper = document.querySelector(".detail-gradient-column");
-  const lower = document.querySelector(".gradient-squares-bottom");
-  const preview = document.querySelector(".detail-preview-link");
-
-  const body = document.querySelector(".detail-left .detail-body");
-  const gallery = document.querySelector(".detail-images");
-  const metadata = document.querySelector(".detail-project-metadata");
-  const leftColumn = document.querySelector(".detail-left");
-
-  function updatePosition() {
-
-    // Centre the preview link between the gradient groups
-    if (upper && lower && preview) {
-      const upperBottom = upper.getBoundingClientRect().bottom;
-      const lowerTop = lower.getBoundingClientRect().top;
-
-      const middle = (upperBottom + lowerTop) / 2;
-
-      preview.style.top = `${middle}px`;
-    }
-
-    // Align the video with the description
-    if (body && gallery) {
-      const bodyTop = body.getBoundingClientRect().top;
-
-      gallery.style.paddingTop = `${bodyTop}px`;
-    }
-  }
-
-  updatePosition();
-
-  const observer = new ResizeObserver(updatePosition);
-
-  if (upper) observer.observe(upper);
-  if (lower) observer.observe(lower);
-  if (leftColumn) observer.observe(leftColumn);
-  if (body) observer.observe(body);
-  if (metadata) observer.observe(metadata);
-
-  window.addEventListener("resize", updatePosition);
-
-  document.fonts.ready.then(updatePosition);
-
-  return () => {
-    observer.disconnect();
-    window.removeEventListener("resize", updatePosition);
-  };
-
-}, [id, isMobile]);
 
   if (!project) {
     return <Navigate to="/" replace />;
@@ -375,9 +316,11 @@ useEffect(() => {
 
 </motion.h1>
 
-      {/* <motion.p className="detail-summary" variants={item}>
-        {project.summary.trim()}
-      </motion.p> */}
+      {!isMobile && project.summary && (
+        <motion.p className="detail-summary" variants={item}>
+          ({project.number}) {project.summary}
+        </motion.p>
+      )}
 
       {isMobile ? (
   <motion.div
@@ -476,20 +419,14 @@ return (
 
       <div className="detail-body">
         {textSections.map((section, index) => (
-          <div
-            className={`detail-text ${
-              index === 0
-                ? "detail-text--first"
-                : ""
-            }`}
-            key={section.n}
-          >
-            {section.paragraphs.map(
-              (paragraph, i) => (
-                <p key={i}>{paragraph}</p>
-              )
-            )}
-          </div>
+          <section className="detail-description-section" key={section.n}>
+            <div className="detail-section-label">
+              {index + 1}
+            </div>
+            <div className="detail-text">
+              {section.paragraphs.map((paragraph, i) => <p key={i}>{paragraph}</p>)}
+            </div>
+          </section>
         ))}
       </div>
 

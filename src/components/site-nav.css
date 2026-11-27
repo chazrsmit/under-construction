@@ -1,155 +1,23 @@
-/* about / contact, next to the site title (desktop only) */
-
-.site-nav {
-  display: none;
+.site-nav { display:none; }
+@media(min-width:768px) {
+  .site-nav { position:absolute; top:22px; left:360px; z-index:50; display:flex; gap:52px; }
+  .site-nav button { padding:0; border:0; background:none; color:inherit; font-family:var(--font-interface, var(--font-main)); font-size:16px; line-height:16px; cursor:pointer; transition:opacity .5s ease-out; }
+  .site-nav button:hover { opacity:.2; }
+  .site-nav a,.site-nav button { position:relative; isolation:isolate; }
+  .site-nav a::before,.site-nav button::before { content:""; position:absolute; inset:-4px -7px; background:#f0f0f0; box-shadow:0 0 6px 3px #f0f0f0; border-radius:3px; z-index:-1; pointer-events:none; }
 }
-
-@media (min-width: 768px) {
-  .site-nav {
-    position: absolute;
-    top: 22px;
-    left: 360px;
-    z-index: 30;
-    display: flex;
-    gap: 52px;
-  }
-
-  .site-nav button {
-    padding: 0;
-    border: 0;
-    background: none;
-    color: inherit;
-    font-family: var(--font-main);
-    font-size: 16px;
-    line-height: 16px;
-    cursor: pointer;
-    transition: opacity 0.5s ease-out;
-  }
-
-  .site-nav button:hover {
-    opacity: 0.2;
-  }
-}
-/* --------------------------------
-   NAVIGATION LINK GLOW
--------------------------------- */
-
-@media (min-width: 768px) {
-
-  .site-nav {
-    z-index: 50;
-  }
-
-  .site-nav a,
-  .site-nav button {
-    position: relative;
-    isolation: isolate;
-  }
-
-  .site-nav a::before,
-  .site-nav button::before {
-    content: "";
-
-    position: absolute;
-
-    inset: -4px -7px;
-
-    background: #f0f0f0;
-
-    box-shadow: 0 0 6px 3px #f0f0f0;
-
-    border-radius: 3px;
-
-    z-index: -1;
-
-    pointer-events: none;
-  }
-
-}
-
-/* --------------------------------
-   NAVIGATION ITEMS
--------------------------------- */
-
-.site-nav-item {
-  position: relative;
-}
-
-.site-nav-item > button {
-  padding: 0;
-  margin: 0;
-
-  border: none;
-  background: none;
-
-  font: inherit;
-  color: inherit;
-}
-
-/* --------------------------------
-   CONTACT LINKS
--------------------------------- */
-
-.contact-links {
-  position: absolute;
-
-  top: calc(100% + 12px);
-  left: 50%;
-
-  transform: translateX(-50%);
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  gap: 8px;
-
-  width: 170px;
-
-  z-index: 60;
-}
-
-.contact-link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 100%;
-  min-height: 25px;
-
-  padding: 6px 10px;
-
-  border: 1px solid #aaa;
-  border-radius: 30px;
-
-  background: #f0f0f0;
-  box-shadow: 0 0 6px 3px #f0f0f0;
-
-  font-family: var(--font-description);
-  font-size: 10px;
-  /* font-style: italic; */
-  font-weight: 400;
-
-  line-height: 1.2;
-
-  color: #111;
-  text-transform: uppercase;
-  text-decoration: none;
-  white-space: nowrap;
-
-  transition:
-    background-color 0.3s ease,
-    color 0.3s ease;
-}
-
-.contact-link:hover {
-  background-color: #111;
-  color: #f0f0f0;
-}
-
-/* Disable the existing nav link background
-   pseudo-element for the contact pills */
-
-.site-nav .contact-link::before {
-  content: none;
+.site-nav-item { position:relative; }
+.site-nav-item > button { padding:0; margin:0; border:0; background:none; font:inherit; color:inherit; }
+.contact-links { position:absolute; top:calc(100% + 12px); left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:8px; width:170px; z-index:60; }
+.contact-link { display:flex; align-items:center; justify-content:center; width:100%; min-height:25px; padding:6px 10px; border:1px solid #aaa; border-radius:30px; background:#f0f0f0; box-shadow:0 0 6px 3px #f0f0f0; font-family:var(--font-interface, var(--font-description)); font-size:10px; font-weight:400; line-height:1.2; color:#111; text-transform:uppercase; text-decoration:none; white-space:nowrap; transition:background-color .3s ease,color .3s ease; }
+.contact-link:hover { background-color:#111; color:#f0f0f0; }
+.site-nav .contact-link::before { content:none; }
+@media(min-width:768px) {
+  .home.desktop-homepage .site-nav { top:22px; left:20%; gap:44px; }
+  .home.desktop-homepage .site-nav button { position:relative; font-family:var(--font-interface, var(--font-main)); font-size:15px; font-weight:400; line-height:1; isolation:isolate; transition:color .4s ease; }
+  .home.desktop-homepage .site-nav button::before { content:""; position:absolute; inset:-3px -16px; background:#d3d3d3; border-radius:50%; box-shadow:none; filter:blur(6px); opacity:.8; z-index:-1; pointer-events:none; transition:opacity .4s ease,background .4s ease,filter .4s ease; }
+  .home.desktop-homepage .site-nav button:hover { opacity:1; color:#555; }
+  .home.desktop-homepage .site-nav button:hover::before { background:#aaa; opacity:.9; filter:blur(9px); }
+  .home.desktop-homepage .contact-link { border:0; border-radius:0; background:#e6e6e6; box-shadow:none; font-family:var(--font-interface, var(--font-main)); font-size:12px; text-transform:lowercase; }
+  .home.desktop-homepage .contact-link:hover { background:#d0d0d0; color:#111; }
 }

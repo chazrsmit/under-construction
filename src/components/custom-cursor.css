@@ -260,3 +260,33 @@
 
   user-select: none;
 }
+
+@media (min-width: 768px) {
+  .custom-cursor-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 24px;
+    padding: 4px 20px;
+
+    border: none;
+    border-radius: 0;
+
+    background: #e8e8e8;
+    box-shadow: none;
+
+    font-family: "Google Sans Flex", sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    font-style: normal;
+
+    line-height: 1.2;
+    letter-spacing: normal;
+    text-transform: lowercase;
+
+    color: #626262;
+
+    white-space: nowrap;
+  }
+}

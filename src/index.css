@@ -25,6 +25,32 @@ body {
 
 
 /* FONTS */
+
+@font-face {
+  font-family: 'BallPill';
+  src: url('/fonts/BallPill-regular.otf') format('opentype');
+
+}
+
+@font-face {
+  font-family: 'BBB Manifont';
+  src: url('/fonts/BBBManifontGrotesk-Book.otf') format('opentype');
+
+}
+
+@font-face {
+  font-family: 'NotCourierSans';
+  src: url('/fonts/NotCourierSans.otf') format('opentype');
+  font-style: normal;
+}
+
+/* @font-face {
+  font-family: 'NotCourierSans';
+  src: url('/fonts/NotCourierSans-Bold.otf') format('opentype');
+  font-style: bold;
+} */
+
+
 @font-face {
   font-family: 'Newsreader';
   src: url('/fonts/Newsreader16pt-Italic.ttf') format('truetype');

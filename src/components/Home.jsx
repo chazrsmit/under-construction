@@ -14,6 +14,7 @@ import {
 import {
   useNavigate,
   useOutlet,
+  useMatch,
 } from "react-router-dom";
 
 import { getProjects } from "./projects.js";
@@ -28,6 +29,7 @@ import {
 import "./home.css";
 import "./site-nav.css";
 import SiteNavigation from "./SiteNavigation";
+import ProjectIndex from "./ProjectIndex";
 
 import PageTransition, {
   usePageTransition,
@@ -148,6 +150,7 @@ export default function Home() {
   );
 
   const navigate = useNavigate();
+  const activeProject = useMatch("/project/:id")?.params.id;
 
   const {
   phase,
@@ -372,6 +375,10 @@ export default function Home() {
       {!isMobile && (
   <SiteNavigation showContent={showContent} />
 )}
+
+      {!isMobile && isDetail && (
+        <ProjectIndex activeProject={activeProject} showContent={showContent} onProjectClick={handleProjectClick} />
+      )}
 
       {/* FIRST GRADIENT GROUP */}
 
