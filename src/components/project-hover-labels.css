@@ -1,0 +1,27 @@
+.project-hover-labels {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 100000;
+  color: #494949;
+  font: 11px/1 NotCourierSans, monospace;
+}
+.project-hover-label {
+  position: absolute;
+  display: grid;
+  width: max-content;
+  background: #dedede;
+  white-space: nowrap;
+}
+.project-hover-label > span {
+  min-width: 0;
+  overflow: hidden;
+}
+.project-hover-label > span > span {
+  display: block;
+  padding: 4px 7px;
+}
+@media (max-width: 767px) {
+  .project-hover-labels { display: none; }
+}
