@@ -65,3 +65,5 @@
   .detail-project-navigation button:hover { opacity:.3; }
   .detail-navigation-index { font-family:var(--font-interface); font-size:11px; line-height:0.1; color:#797979; }
 }
+
+@media(min-width:768px){.table-mode .detail-left{--detail-pad-left:23px;--detail-pad-top:76px;--detail-label-width:95px;overflow-y:auto}.table-mode .detail-right{width:40%;--detail-media-top:252px}.table-mode .detail-left{width:55%}.table-mode .detail-section-label::before{inset:0;border-radius:0;filter:none;opacity:1}.table-mode .detail-status-label{background:#dedede;color:#494949;-webkit-text-stroke:0}.table-mode .detail-technologies-list{background:#dedede}.table-mode .detail-project-navigation{position:sticky;bottom:0;left:auto;right:auto;margin-left:115px;line-height:1.2}.table-mode .detail-project-navigation button,.table-mode .detail-navigation-index{line-height:1.2}.table-mode .detail-preview-link{writing-mode:horizontal-tb;transform:none;bottom:14px;left:23px}}

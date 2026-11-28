@@ -103,6 +103,7 @@ export default function NavigationOverlay({
 
       <motion.div
         className="navigation-overlay-backdrop"
+        style={{ backdropFilter: "none", WebkitBackdropFilter: "none", background: "#f5f5f5" }}
         variants={{
           hidden: {
             opacity: 0,

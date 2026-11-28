@@ -61,6 +61,7 @@ export default function PageTransition({
   return createPortal(
     <motion.div
       className="page-transition"
+      style={{ background: "#ebebeb" }}
       aria-hidden="true"
       initial={{ y: "100%" }}
       animate={{

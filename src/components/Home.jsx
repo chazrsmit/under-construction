@@ -1,6 +1,8 @@
 
 import { useState, useEffect, useMemo } from "react";
 
+import TableHomepage, { TableNavigation, ProjectIntroduction } from "./TableHomepage";
+import "./table-homepage.css";
 import AnimatedTitle from "./AnimatedTitle";
 
 import {
@@ -42,6 +44,7 @@ import PageTransition, {
 -------------------------------- */
 
 const projects = compositionProjects;
+const USE_TABLE = true;
 
 /* --------------------------------
    MOBILE TILE SETTINGS
@@ -166,7 +169,11 @@ export default function Home() {
 
   const projectsData = getProjects(isMobile);
 
-  const [titleDocked, setTitleDocked] = useState(false);
+  const [titleDocked, setTitleDocked] = useState(USE_TABLE && !isMobile);
+  const tableMode = USE_TABLE && !isMobile;
+  const [introPlayed, setIntroPlayed] = useState(Boolean(activeProject));
+  useEffect(() => { if (tableMode) { setShowContent(true); setTitleDocked(true); } }, [tableMode]);
+  useEffect(() => { if (activeProject) setIntroPlayed(true); }, [activeProject]);
 
   useEffect(() => {
   let timeout;
@@ -320,7 +327,7 @@ export default function Home() {
   className={`home
     ${projectsOpen ? "projects-open" : ""}
     ${!isMobile ? "desktop-homepage" : ""}
-    ${isDetail ? "project-detail-open" : ""}
+    ${isDetail ? "project-detail-open" : ""} ${tableMode ? "table-mode" : ""}
   `}
 >
       {/* GLOBAL CUSTOM CURSOR */}
@@ -333,7 +340,7 @@ export default function Home() {
 
       {/* TITLE */}
 
-      <motion.div
+      {!tableMode && <motion.div
   layout
   className={`site-title ${
     titleDocked
@@ -380,12 +387,12 @@ export default function Home() {
     "Charlotte Smit"
   )}
 </h1>
-</motion.div>
+</motion.div>}
 
       {/* NAVIGATION */}
 
       {!isMobile && (
-  <SiteNavigation showContent={showContent} />
+  tableMode ? <TableNavigation isDetail={isDetail} onHome={() => transitionTo("/")} /> : <SiteNavigation showContent={showContent} />
 )}
 
       {!isMobile && (
@@ -463,7 +470,9 @@ export default function Home() {
           DESKTOP HOMEPAGE
       -------------------------------- */}
 
-      {!isMobile && !isDetail && (
+      {tableMode && !isDetail && <TableHomepage projects={projectsData} hovered={hoveredIndex} setHovered={setHoveredIndex} onClick={handleProjectClick} intro={!introPlayed} onIntroEnd={() => setIntroPlayed(true)} />}
+      {tableMode && isDetail && phase === "idle" && <ProjectIntroduction key={activeProject} title={projectsData.find(p => p.id === activeProject)?.title} />}
+      {!tableMode && !isMobile && !isDetail && (
         <DesktopComposition
           showContent={
             showContent && !detailMounted
