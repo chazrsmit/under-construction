@@ -382,15 +382,19 @@ body {
     line-height: 1.2;
   }
 
-  .home.desktop-homepage .gradient-squares-top {
-    display: none;
+  .home.desktop-homepage:not(.project-detail-open) .gradient-squares-top {
+    top: auto;
+    right: auto;
+    bottom: 42px;
+    left: 16px;
+    flex-direction: column;
   }
 
   .home.desktop-homepage:not(.project-detail-open) .gradient-squares-bottom {
-    bottom: 42px;
-    left: 16px;
-    translate: none;
-    flex-direction: column;
+    bottom: 14px;
+    left: 50%;
+    translate: -50% 0;
+    flex-direction: row;
   }
 
 

@@ -1,0 +1,19 @@
+.cursor-trail {
+  position: fixed;
+  inset: 0;
+  z-index: 99990;
+  pointer-events: none;
+  overflow: hidden;
+}
+.cursor-trail img {
+  position: absolute;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+  animation: cursor-trace-fade var(--fade) var(--hold) linear forwards;
+}
+@keyframes cursor-trace-fade {
+  to { opacity: 0; }
+}
+@media (max-width: 767px), (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .cursor-trail { display: none; }
+}

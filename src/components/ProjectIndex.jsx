@@ -42,7 +42,7 @@ export default function ProjectIndex({
             />
           </span>
           <span className="project-index-label">
-            ({project.number}) {project.name}
+            <span className="project-index-label-text">({project.number}) {project.name}</span>
           </span>
         </button>
       ))}

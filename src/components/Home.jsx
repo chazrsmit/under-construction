@@ -21,6 +21,8 @@ import { getProjects } from "./projects.js";
 
 import DesktopComposition from "./DesktopComposition";
 import CustomCursor from "./CustomCursor";
+import CursorTrail from "./CursorTrail";
+
 
 import {
   compositionProjects,
@@ -324,6 +326,8 @@ export default function Home() {
       {/* GLOBAL CUSTOM CURSOR */}
 
       <CustomCursor />
+      {!isMobile && <CursorTrail enabled={showContent && phase === "idle"} />}
+
       {/* Animated HTML title */}
       <AnimatedTitle /> 
 

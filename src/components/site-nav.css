@@ -4,7 +4,8 @@
   .site-nav button { padding:0; border:0; background:none; color:inherit; font-family:var(--font-interface, var(--font-main)); font-size:16px; line-height:16px; cursor:pointer; transition:opacity .5s ease-out; }
   .site-nav button:hover { opacity:.2; }
   .site-nav a,.site-nav button { position:relative; isolation:isolate; }
-  .site-nav a::before,.site-nav button::before { content:""; position:absolute; inset:-4px -7px; background:#f0f0f0; box-shadow:0 0 6px 3px #f0f0f0; border-radius:3px; z-index:-1; pointer-events:none; }
+  .site-nav a::before,.site-nav button::before { content:""; position:absolute; inset:-4px -7px; background:#f0f0f0; box-shadow:0 0 6px 3px #f0f0f0; 
+    border-radius:3px; z-index:-1; pointer-events:none; }
 }
 .site-nav-item { position:relative; }
 .site-nav-item > button { padding:0; margin:0; border:0; background:none; font:inherit; color:inherit; }
