@@ -6,3 +6,45 @@
 @keyframes table-fade{from{opacity:0}to{opacity:1}}@keyframes table-rect{0%,43%{top:100%;height:0}62%,80%{top:0;height:100%}100%{top:var(--table-top);height:calc(8 * var(--table-row) + 24px)}}@keyframes table-title{0%,62%{opacity:0}73%,81%{opacity:1}95%,100%{opacity:0}}
 @media(prefers-reduced-motion:reduce){.table-intro-playing *{animation:none!important}.table-project-intro{display:none}}
 }
+
+/* Desktop alignment refinements */
+@media (min-width: 768px) {
+  .table-mode {
+    --table-gutter: 16px;
+    --table-left: calc(var(--table-gutter) + (100% - 2 * var(--table-gutter)) * .203);
+    --table-right: 79%;
+    --table-band-width: calc(var(--table-right) - var(--table-left));
+    --table-contact-left: 60.8%;
+  }
+  /* The fixed navigation and absolute rectangle share viewport coordinates. */
+  .table-about, .table-contact { box-sizing: border-box; }
+  .table-about { width: min(19%, calc(var(--table-contact-left) - var(--table-left) - 16px)); }
+  .table-contact { left: var(--table-contact-left); width: calc(var(--table-right) - var(--table-contact-left)); }
+  .table-mode:not(.project-detail-open) :is(.table-about,.table-contact) { background: transparent; }
+  .table-contact a { overflow-wrap: anywhere; }
+  .table-projects { left: var(--table-gutter); right: var(--table-gutter); }
+  .table-grid { line-height: 1; align-items: center; }
+  .table-cell { align-items: center; justify-content: flex-start; line-height: 1; }
+  .table-number, .table-cover { top: 50%; transform: translateY(-50%); line-height: 1; }
+  .table-number { padding-block: 4px; }
+  .table-cover > span { line-height: 1; }
+  .table-big-title {
+    left: var(--table-left);
+    width: var(--table-band-width);
+    transform: translateY(-50%);
+    text-align: center;
+    font-size: clamp(24px, 7vw, 105px);
+    line-height: 1;
+    container-type: inline-size;
+  }
+  .table-big-title > span { display: block; font-size: 12.5cqw; }
+  .table-controls { z-index: 100; }
+}
+
+/* Global animation: keep photographs above the table and navigation, even paused. */
+@media (min-width: 768px) {
+  .table-home.table-animation-started .table-photos { z-index: 75; }
+  .table-home.table-animation-started .table-projects:has(.active) { z-index: 5; }
+  .table-mode:has(.table-animation-started) .project-index { z-index: 90; }
+  .table-home .table-controls { z-index: 100; }
+}
